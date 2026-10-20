@@ -70,6 +70,10 @@ Vagrantfile
 # Trabalho das automacoes RPA (perfil do Chrome, logs, curriculos).
 /writable/automacoes-rpa/*
 
+# O token global do cron (autentica as chamadas do cron-job.org).
+# Ele e criado no primeiro acesso e NUNCA pode ser versionado.
+/writable/cron_token.txt
+
 php_errors.log
 
 # Local SQLite database (created at runtime)
