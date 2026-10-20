@@ -305,12 +305,30 @@ $senhaTeste = 'RevisaoFinal2026';
 $usuarioAdmin = new Cliente($base);
 $usuarioTeste = new Cliente($base);
 
+// A conta de teste e apagada antes: o cadastro precisa ser testado de
+// verdade (e nao reaproveitar uma conta antiga, com outro plano).
+$idAntigo = (int) valor("SELECT id FROM usuarios WHERE email = '" . $emailTeste . "'");
+
+if ($idAntigo > 0) {
+    executar('DELETE FROM palavras_chave WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM logs_consulta WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM emails_enviados WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM vagas WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM cron_jobs_usuario WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM execucoes_manuais_usuario WHERE usuario_id = ' . $idAntigo);
+    executar('DELETE FROM usuarios WHERE id = ' . $idAntigo);
+}
+
 // 1.1 Cadastro pelo site publico.
+//
+// O plano vai junto (Fase 9): o usuario de teste entra no Profissional,
+// que tem o envio em massa.
 [$status, $corpo] = $usuarioTeste->post('/registro', [
     'nome'              => 'Usuario Revisao Final',
     'email'             => $emailTeste,
     'senha'             => $senhaTeste,
     'senha_confirmacao' => $senhaTeste,
+    'plano'             => 'profissional',
 ]);
 
 $novoId = (int) valor("SELECT id FROM usuarios WHERE email = '" . $emailTeste . "'");
@@ -351,7 +369,7 @@ checar('login do usuario aprovado', $status === 303, 'HTTP ' . $status);
 
 [$status, $corpo] = $usuarioTeste->get('/painel');
 
-checar('painel do usuario abre', $status === 200 && contem($corpo, 'Candidaturas enviadas'), 'HTTP ' . $status);
+checar('painel do usuario abre', $status === 200 && contem($corpo, 'Vagas candidatadas'), 'HTTP ' . $status);
 
 // 1.5 Cadastro de palavra-chave.
 [$status, $corpo] = $usuarioTeste->post('/painel/palavras-chave', [

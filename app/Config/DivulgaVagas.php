@@ -72,4 +72,14 @@ class DivulgaVagas extends BaseConfig
      * candidaturas em cima uma da outra.
      */
     public int $pausaEntreCandidaturas = 8;
+
+    /**
+     * Quantas vagas o agendador externo candidata por chamada.
+     *
+     * O agendador externo (cron-job.org) abandona a requisicao depois
+     * de 30 segundos: a chamada por HTTP precisa caber nesse tempo.
+     * A fila inteira e drenada ao longo das chamadas seguintes (e pelo
+     * comando Spark, que nao tem esse limite).
+     */
+    public int $maxVagasPorChamada = 1;
 }

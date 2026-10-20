@@ -795,6 +795,16 @@
     color: var(--cor-sucesso);
 }
 
+/* O recurso que o plano nao tem (o "—" da tabela). */
+.plano__lista li.plano__item-indisponivel {
+    color: var(--cor-texto-suave);
+    opacity: 0.75;
+}
+
+.plano__lista li.plano__item-indisponivel .icone {
+    color: var(--cor-texto-suave);
+}
+
 .planos__aviso {
     display: flex;
     align-items: center;
@@ -1463,6 +1473,8 @@ a.canal:hover {
 }
 
 /* Aviso dentro da secao de planos no mobile. */
+
+
 .planos__aviso {
     padding-inline: var(--espaco-4);
 }
@@ -1518,4 +1530,35 @@ a.canal:hover {
 .cartao-plano__corpo strong {
     color: var(--cor-texto);
     font-size: var(--texto-sm);
+}
+
+/* -------------------------------------------------------------------------
+   AJUSTES DE CSS (PLANOS E RODAPE)
+   -------------------------------------------------------------------------
+   As classes que a pagina de precos (e o rodape) usavam sem estilo.
+   ------------------------------------------------------------------------- */
+
+/* O cabecalho do plano (nome, descricao e preco). */
+.plano__cabecalho {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-1);
+    margin-bottom: var(--espaco-3);
+}
+
+/* A coluna do rodape. */
+.rodape__coluna {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+}
+
+/* O copyright do rodape. */
+.rodape__copyright {
+    padding-top: var(--espaco-3);
+    margin-top: var(--espaco-3);
+    border-top: 1px solid var(--cor-borda);
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+    text-align: center;
 }

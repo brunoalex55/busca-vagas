@@ -375,14 +375,14 @@ class CandidaturaDivulgaVagas
      *
      * @return array<string, mixed>
      */
-    public function candidatarGlobal(string $origem = 'cron'): array
+    public function candidatarGlobal(string $origem = 'cron', int $maximoVagas = 0): array
     {
         $resumo = $this->resumoVazio();
 
         $usuarios = model('UsuarioModel')->listarParaEnvio();
 
         foreach ($usuarios as $usuario) {
-            $detalhe = $this->candidatarDoUsuario((int) $usuario['id'], $origem);
+            $detalhe = $this->candidatarDoUsuario((int) $usuario['id'], $origem, $maximoVagas);
 
             $resumo['candidaturas_enviadas'] += (int) $detalhe['candidaturas_enviadas'];
             $resumo['emails_enviados'] += (int) $detalhe['emails_enviados'];

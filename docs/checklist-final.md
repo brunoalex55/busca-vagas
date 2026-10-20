@@ -253,18 +253,18 @@
 
 ## Banco de Dados
 
-- [x] Todas as migrations executadas (32 de 32 migrations aplicadas; a fase 6 esta travada (as tabelas mensagens_contato e emails_sistema nao existem))
+- [x] Todas as migrations executadas (33 de 33 migrations aplicadas; a fase 6 esta travada (as tabelas mensagens_contato e emails_sistema nao existem))
 - [x] UNIQUE(job_id, usuario_id) na tabela vagas (indice uq_vagas_usuario_job (usuario_id, job_id))
 - [x] UNIQUE(hash_unico, usuario_id) na tabela vagas (indice uq_vagas_usuario_hash (usuario_id, hash_unico))
 - [x] Colunas de envio em configuracoes (as 8 colunas de janela, intervalo e limite existem)
 - [x] Colunas de distribuicao em usuarios (consultas_usadas_mes, mes_referencia, limite_manual e envio_automatico existem)
-- [x] Tabela configuracao_cron criada e populada (modo atual: spark_manual, limite de execucoes manuais: 100)
+- [x] Tabela configuracao_cron criada e populada (modo atual: spark_manual, limite de execucoes manuais: 3)
 - [x] Tabela cron_jobs_usuario criada (tabela presente no banco)
 - [x] Tabela execucoes_manuais_usuario criada (tabela presente no banco)
 
 ## Qualidade do Codigo (Bloco C)
 
-- [x] Nenhum ternario (detector por tokenizador: --- arquivos: 219 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
+- [x] Nenhum ternario (detector por tokenizador: --- arquivos: 220 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
 - [x] Nenhum atalho de echo (nenhuma tag <?= em todo o app/)
 - [x] Nenhum endforeach/endif/endfor/endwhile/endswitch (nenhuma sintaxe alternativa em todo o app/)
 - [x] Comentarios linha a linha em PT-BR (todos os arquivos de app/ tem comentarios em PT-BR)

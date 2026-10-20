@@ -109,6 +109,22 @@ echo PHP_EOL . '-- VagaModel: fila do bot --' . PHP_EOL;
 
 $vagas = model('VagaModel');
 
+// O cenario e sobre UMA vaga: as outras vagas pendentes do usuario
+// sao tiradas da fila durante o teste (e devolvidas no final).
+$filaReal = $vagas->db->table('vagas')
+    ->select('id, candidatura_divulgavagas_status')
+    ->where('usuario_id', $usuarioId)
+    ->where('provedor_vaga', 'divulgavagas')
+    ->whereIn('candidatura_divulgavagas_status', ['pendente', 'pendente_email'])
+    ->get()
+    ->getResultArray();
+
+foreach ($filaReal as $vagaReal) {
+    $vagas->db->table('vagas')
+        ->where('id', (int) $vagaReal['id'])
+        ->update(['candidatura_divulgavagas_status' => 'enviada']);
+}
+
 // Sem vagas do Divulga Vagas, a proxima e nulo.
 $antes = $vagas->proximaParaBot($usuarioId);
 checar('proximaParaBot() devolve nulo sem vagas do provedor', $antes === null);
@@ -161,6 +177,13 @@ checar('ultimaCandidaturaDoBot() devolve a data', $ultimaBot === null || $ultima
 
 // Limpa a vaga de teste.
 $vagas->delete($idVaga);
+
+// Devolve as vagas reais do usuario para a fila.
+foreach ($filaReal as $vagaReal) {
+    $vagas->db->table('vagas')
+        ->where('id', (int) $vagaReal['id'])
+        ->update(['candidatura_divulgavagas_status' => (string) $vagaReal['candidatura_divulgavagas_status']]);
+}
 
 echo PHP_EOL . '-- ConfiguracaoModel: contadores do Divulga Vagas --' . PHP_EOL;
 

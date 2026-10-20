@@ -45,6 +45,11 @@ class UsuarioModel extends Model
         'ultima_execucao_envio_automatico',
         'ultima_execucao_busca_vagas',
         'ativo',
+        // O plano do usuario (Fase 9): escolhido no cadastro ou
+        // atribuido pelo administrador.
+        'plano_id',
+        'plano_inicio_em',
+        'plano_fim_em',
     ];
 
     // Nunca devolver o hash da senha em toArray()/JSON.

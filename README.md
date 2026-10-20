@@ -601,6 +601,17 @@ php spark divulgavagas:buscar-vagas [--usuario=N] [--limite=N]
 php spark divulgavagas:candidatar [--usuario=N] [--vaga=ID] [--limite=N]
 ```
 
+O `--limite` limita quantas vagas a execucao candidata. Sem ele, o
+comando **esvazia a fila inteira** (uma vaga de cada vez, com a pausa
+entre elas).
+
+**O cuidado com o agendador externo:** o cron-job.org abandona a
+requisicao depois de 30 segundos. Por isso a chamada por HTTP
+(`/cron/.../divulgavagas/candidatar`) faz **1 vaga por chamada**
+(`divulgavagas.maxVagasPorChamada`): a fila vai sendo drenada pelas
+chamadas seguintes (e o comando Spark, sem limite de tempo, drena
+tudo de uma vez).
+
 ### 30.4.1 O cron-job.org agenda TUDO (inclusive o Divulga Vagas)
 
 O painel de agendamento (`/admin/cron`) agenda, pelo cron-job.org, **um

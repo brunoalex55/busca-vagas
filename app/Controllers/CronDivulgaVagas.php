@@ -84,7 +84,7 @@ class CronDivulgaVagas extends BaseController
         }
 
         $candidatura = new CandidaturaDivulgaVagas();
-        $resumo = $candidatura->candidatarDoUsuario($usuarioId, 'cron');
+        $resumo = $candidatura->candidatarDoUsuario($usuarioId, 'cron', $this->maximoDeVagas());
 
         return $this->resposta(200, 'sucesso', 'Candidatura concluida.', $resumo);
     }
@@ -102,7 +102,7 @@ class CronDivulgaVagas extends BaseController
         }
 
         $candidatura = new CandidaturaDivulgaVagas();
-        $resumo = $candidatura->candidatarGlobal('cron');
+        $resumo = $candidatura->candidatarGlobal('cron', $this->maximoDeVagas());
 
         return $this->resposta(200, 'sucesso', 'Candidatura concluida.', $resumo);
     }
@@ -122,6 +122,19 @@ class CronDivulgaVagas extends BaseController
 
         // A comparacao e feita em tempo constante.
         return hash_equals($esperado, $informado);
+    }
+
+    /**
+     * Quantas vagas esta chamada pode candidatar.
+     *
+     * O agendador externo (cron-job.org) abandona a requisicao depois
+     * de 30 segundos: a chamada por HTTP fica dentro desse tempo. A
+     * fila inteira e drenada pelas chamadas seguintes (e pelo comando
+     * Spark, que roda sem esse limite).
+     */
+    private function maximoDeVagas(): int
+    {
+        return max(1, (int) config('DivulgaVagas')->maxVagasPorChamada);
     }
 
     /**
