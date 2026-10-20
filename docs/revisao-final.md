@@ -15,7 +15,7 @@ php tools/revisao-final.php
 
 ### 1. Fluxo completo do usuario
 
-  PASS  cadastro cria o usuario (id 190)
+  PASS  cadastro cria o usuario (id 205)
   PASS  cadastro devolve 303 (redireciona) (HTTP 303)
   PASS  usuario novo fica pendente (status: pendente)
   PASS  usuario pendente nao entra no painel (HTTP 302)
@@ -37,7 +37,7 @@ php tools/revisao-final.php
   PASS  pagina do admin: /admin (HTTP 200)
   PASS  pagina do admin: /admin/cron (HTTP 200)
   PASS  pagina do admin: /admin/usuarios (HTTP 200)
-  PASS  pagina do admin: /admin/usuarios/190 (HTTP 200)
+  PASS  pagina do admin: /admin/usuarios/205 (HTTP 200)
   PASS  pagina do admin: /admin/chaves (HTTP 200)
   PASS  pagina do admin: /admin/distribuicao (HTTP 200)
   PASS  pagina do admin: /admin/solicitacoes (HTTP 200)
@@ -76,8 +76,8 @@ php tools/revisao-final.php
   PASS  admin salva a chave de API do cron-job.org (HTTP 303)
   PASS  teste de conexao com a API (HTTP 303)
   PASS  o painel mostra o resultado do teste de conexao
-  PASS  sincronizar cria jobs para os usuarios ativos (8 -> 12 (HTTP 303))
-  PASS  cada job gravado tem id do servico (12 job(s))
+  PASS  sincronizar cria jobs para os usuarios ativos (8 -> 16 (HTTP 303))
+  PASS  cada job gravado tem id do servico (16 job(s))
   PASS  o job do usuario tem token externo (token com 64 caracteres)
   PASS  tela de jobs do servico responde (HTTP 200)
   PASS  o painel mostra os tokens e jobs por usuario
