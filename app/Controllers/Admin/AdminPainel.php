@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Controllers\Admin;
 
@@ -9,6 +23,7 @@ use App\Models\ConfiguracaoModel;
 use App\Models\EmailEnviadoModel;
 use App\Models\LogConsultaModel;
 use App\Models\SolicitacaoLiberacaoModel;
+use App\Models\SolicitacaoPlanoModel;
 use App\Models\UsuarioModel;
 use App\Models\VagaModel;
 
@@ -68,6 +83,14 @@ class AdminPainel extends AdminBase
             }
         }
 
+        // Os pedidos de plano que os usuarios enviaram do painel deles.
+        $solicitacoesPlano = model(SolicitacaoPlanoModel::class);
+
+        // Quantas contas estao bloqueadas por falta de pagamento.
+        $bloqueadosPagamento = (int) db_connect()->table('usuarios')
+            ->where('bloqueado_por_pagamento', 1)
+            ->countAllResults();
+
         return view('admin/visao_geral', $this->dadosAdmin('Visao geral', [
             'usuarios'        => $usuarios->estatisticas(),
             'usuariosRecentes' => $usuarios->listarRecentes(5),
@@ -85,6 +108,8 @@ class AdminPainel extends AdminBase
             'distribuicao'    => $distribuicao,
             'planos'          => $usuariosPorPlano,
             'usuariosNoLimite' => $noLimite,
+            'pedidosPlano'    => $solicitacoesPlano->contarPendentes(),
+            'bloqueadosPagamento' => $bloqueadosPagamento,
         ]));
     }
 }

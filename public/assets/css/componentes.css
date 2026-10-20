@@ -1,3 +1,17 @@
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /* ==========================================================================
    COMPONENTES
    --------------------------------------------------------------------------
@@ -805,3 +819,220 @@
     color: var(--cor-texto-suave);
     line-height: 1.6;
 }
+
+/* --------------------------------------------------------------------------
+   MODAL (JANELA SOBREPOSTA)
+   --------------------------------------------------------------------------
+   Usado quando o conteudo nao cabe no cartao (o pedido de plano, por
+   exemplo). O marcado e:
+
+       <div class="modal" id="modal-x">
+           <div class="modal__janela">
+               <header class="modal__cabecalho">...</header>
+               <div class="modal__corpo">...</div>
+               <footer class="modal__rodape">...</footer>
+           </div>
+       </div>
+
+   O botao que abre usa data-modal-abrir="modal-x" e o que fecha usa
+   data-modal-fechar. O JavaScript cuida do resto (ESC, clique fora).
+   -------------------------------------------------------------------------- */
+
+/* A camada escura por tras da janela. */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--espaco-4);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+/* O estado aberto. */
+.modal--aberto {
+    display: flex;
+}
+
+/* A janela em si. */
+.modal__janela {
+    width: 100%;
+    max-width: 540px;
+    max-height: calc(100vh - 2 * var(--espaco-4));
+    display: flex;
+    flex-direction: column;
+    background: var(--cor-fundo);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-xl);
+    overflow: hidden;
+    animation: modal-entrar 200ms ease-out;
+}
+
+/* A animacao de entrada da janela. */
+@keyframes modal-entrar {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* O cabecalho da janela. */
+.modal__cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+    padding: var(--espaco-5) var(--espaco-6);
+    border-bottom: 1px solid var(--cor-borda);
+    background: var(--cor-fundo-alt);
+}
+
+/* O titulo da janela. */
+.modal__titulo {
+    margin: 0;
+    font-size: var(--texto-xl);
+    font-weight: 700;
+    color: var(--cor-texto);
+    line-height: 1.3;
+}
+
+/* O texto de apoio do titulo. */
+.modal__subtitulo {
+    margin: var(--espaco-1) 0 0;
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+    line-height: 1.5;
+}
+
+/* O botao de fechar (o X). */
+.modal__fechar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+    background: var(--cor-fundo);
+    color: var(--cor-texto-suave);
+    cursor: pointer;
+    transition: background var(--transicao-rapida), color var(--transicao-rapida),
+        border-color var(--transicao-rapida);
+}
+
+.modal__fechar:hover,
+.modal__fechar:focus-visible {
+    background: var(--cor-erro-clara);
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+/* O icone dentro do botao de fechar. */
+.modal__fechar .icone {
+    width: 18px;
+    height: 18px;
+}
+
+/* O corpo da janela (a parte que rola). */
+.modal__corpo {
+    flex: 1;
+    padding: var(--espaco-6);
+    overflow-y: auto;
+}
+
+/* O rodape da janela (os botoes). */
+.modal__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-3);
+    justify-content: flex-end;
+    padding: var(--espaco-4) var(--espaco-6);
+    border-top: 1px solid var(--cor-borda);
+    background: var(--cor-fundo-alt);
+}
+
+/* O corpo da pagina fica parado quando o modal abre. */
+body.modal-aberto {
+    overflow: hidden;
+}
+/* --------------------------------------------------------------------------
+   BLOCO DO PIX (A CHAVE E O VALOR DO PAGAMENTO)
+   --------------------------------------------------------------------------
+   Aparece no site publico, na tela de aprovacao e no painel do
+   administrador (o relatorio de faturamento).
+   -------------------------------------------------------------------------- */
+
+/* Bloco PIX. */
+.pix {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+    padding: var(--espaco-6);
+    background: var(--cor-fundo-alt);
+    border: 1px dashed var(--cor-borda-forte);
+    border-radius: var(--raio-lg);
+}
+
+.pix__titulo {
+    font-size: var(--texto-lg);
+}
+
+.pix__linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+}
+
+.pix__rotulo {
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cor-texto-suave);
+}
+
+.pix__valor-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-2);
+}
+
+.pix__valor {
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+    font-family: var(--fonte-mono);
+    font-size: var(--texto-sm);
+    word-break: break-all;
+}
+
+.pix__valor-destaque {
+    font-size: var(--texto-2xl);
+    font-weight: 900;
+    color: var(--cor-primaria);
+}
+
+.pix__subtitulo {
+    margin-bottom: var(--espaco-2);
+    font-size: var(--texto-sm);
+}
+
+.pix__instrucoes p {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+}
+

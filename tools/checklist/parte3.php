@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 /**
  * Verificador do checklist final - parte 3.
@@ -253,7 +267,7 @@ item('Qualidade do Codigo (Bloco C)', 'Nomenclatura PT-BR em todo o codigo', $no
 
 // -------------------------------------------------------- Documentacao
 
-item('Documentacao', 'README.md completo', existe('README.md') && contem('README.md', '## 35. Licenca'), 'README com as 35 secoes (as do segundo provedor e dos planos vieram depois)');
+item('Documentacao', 'README.md completo', existe('README.md') && contem('README.md', '## Licen') && contem('README.md', '## A dor real'), 'README com a dor real, o que o projeto resolve, as imagens do ambiente e o apoio');
 item('Documentacao', 'docs/agendamento-linux.md', existe('docs/agendamento-linux.md'), 'docs/agendamento-linux.md');
 item('Documentacao', 'docs/agendamento-windows.md', existe('docs/agendamento-windows.md'), 'docs/agendamento-windows.md');
 item('Documentacao', 'docs/agendamento-manual.md', existe('docs/agendamento-manual.md'), 'docs/agendamento-manual.md');
@@ -288,6 +302,40 @@ item('Isolamento de Vagas por Usuario (Fase 9)', 'Log de acesso indevido em writ
 item('Isolamento de Vagas por Usuario (Fase 9)', 'SQL de sanidade no README', contem('README.md', 'HAVING total > 1'), 'o SQL que mostra vazamento entre usuarios');
 item('Isolamento de Vagas por Usuario (Fase 9)', 'Nenhum ternario, nenhum <?=, nenhuma sintaxe alternativa de view', true, 'a checagem e feita pelo detector do Bloco C (tools/detector-c1.php)');
 
+// As views que usam o layout e nao fecham a secao (o painel perde o
+// menu e o CSS quando isso acontece).
+$viewsSemEndSection = 0;
+
+foreach (glob($raiz . '/app/Views/**/*.php') as $arquivoView) {
+    $conteudoView = (string) file_get_contents($arquivoView);
+
+    if (strpos($conteudoView, '$this->extend(') !== false && strpos($conteudoView, '$this->endSection()') === false) {
+        $viewsSemEndSection++;
+    }
+}
+
+foreach (glob($raiz . '/app/Views/*.php') as $arquivoView) {
+    $conteudoView = (string) file_get_contents($arquivoView);
+
+    if (strpos($conteudoView, '$this->extend(') !== false && strpos($conteudoView, '$this->endSection()') === false) {
+        $viewsSemEndSection++;
+    }
+}
+echo PHP_EOL . '-- Pedido de Plano, Faturamento e Bloqueio por Pagamento (Fase 9 b) --' . PHP_EOL;
+item('Pedido de Plano (Fase 9 b)', 'Menu do admin tem Faturamento e Pedidos de plano', contem('app/Views/layouts/admin.php', 'admin/faturamento') && contem('app/Views/layouts/admin.php', 'admin/planos/solicitacoes'), 'os dois itens novos no menu lateral');
+item('Pedido de Plano (Fase 9 b)', 'Toda view com extend fecha a secao (o layout e aplicado)', $viewsSemEndSection === 0, 'nenhuma view sem $this->endSection()');
+
+item('Pedido de Plano (Fase 9 b)', 'Tabela solicitacoes_plano criada', existe('app/Database/Migrations/2026-10-20-000033_CriarSolicitacoesDePlanoEBloqueioPorPagamento.php'), 'a fila de pedidos de plano');
+item('Pedido de Plano (Fase 9 b)', 'Usuario escolhe o plano dentro do painel (modal)', existe('app/Controllers/PainelPlano.php') && contem('app/Views/painel/inicio.php', 'data-modal-abrir="modal-plano"') && contem('app/Views/painel/inicio.php', 'painel/plano/solicitar'), 'a janela de upgrade no painel do usuario');
+item('Pedido de Plano (Fase 9 b)', 'Componente de modal no CSS e no JS', contem('public/assets/css/componentes.css', '.modal__janela') && contem('public/assets/js/utilidades.js', 'iniciarModais'), 'o modal (CSS3 puro e JS vanilla)');
+item('Pedido de Plano (Fase 9 b)', 'Admin ve a fila de pedidos e aprova/recusa', contem('app/Controllers/Admin/AdminPlanos.php', 'aprovarSolicitacao') && contem('app/Controllers/Admin/AdminPlanos.php', 'recusarSolicitacao') && existe('app/Views/admin/planos/solicitacoes.php'), 'a fila em /admin/planos/solicitacoes');
+item('Pedido de Plano (Fase 9 b)', 'Admin tem alerta de pedido pendente no painel', contem('app/Controllers/Admin/AdminPainel.php', 'contarPendentes') && contem('app/Views/admin/visao_geral.php', 'pedido(s) de plano'), 'o alerta no dashboard do admin');
+item('Faturamento (Fase 9 b)', 'Tela de relatorio mensal no admin', existe('app/Controllers/Admin/AdminFaturamento.php') && existe('app/Views/admin/faturamento.php') && contem('app/Views/admin/faturamento.php', 'Historico por mes'), 'a tela /admin/faturamento');
+item('Faturamento (Fase 9 b)', 'Bloqueio por falta de pagamento (POST)', contem('app/Controllers/Admin/AdminFaturamento.php', 'bloquearPagamento') && contem('app/Controllers/Admin/AdminFaturamento.php', 'bloqueado_por_pagamento'), 'o bloqueio marca a conta para a renovacao');
+item('Faturamento (Fase 9 b)', 'Usuario bloqueado ve os dados do PIX de novo', contem('app/Views/aprovacao/aguardando.php', 'Renove seu plano') && contem('app/Controllers/AguardandoAprovacao.php', 'bloqueadoPagamento'), 'a tela de renovacao');
+item('Faturamento (Fase 9 b)', 'Crons rodam apenas com usuarios ativos', contem('app/Models/UsuarioModel.php', 'listarAtivos') && contem('app/Libraries/CandidaturaDivulgaVagas.php', 'listarAtivos'), 'a lista de contas ativas e a base de todos os crons');
+item('Faturamento (Fase 9 b)', 'O curriculo em PDF nunca e apagado pelo sistema', contem('app/Controllers/Configuracoes.php', 'O arquivo anterior NAO e apagado'), 'o upload nao apaga o PDF anterior');
+item('Faturamento (Fase 9 b)', 'Nenhum ternario, nenhum <?=, nenhuma sintaxe alternativa de view', true, 'a checagem e feita pelo detector do Bloco C (tools/detector-c1.php)');
 salvarItens($arquivo);
 
 echo 'parte 3: ' . count($itens) . " itens\n";

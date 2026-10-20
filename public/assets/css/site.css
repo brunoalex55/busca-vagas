@@ -1,3 +1,17 @@
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /* ==========================================================================
    SITE PUBLICO
    --------------------------------------------------------------------------
@@ -1243,70 +1257,6 @@
     justify-content: center;
     padding-top: var(--espaco-4);
     border-top: 1px solid var(--cor-borda);
-}
-
-/* Bloco PIX. */
-.pix {
-    display: flex;
-    flex-direction: column;
-    gap: var(--espaco-4);
-    padding: var(--espaco-6);
-    background: var(--cor-fundo-alt);
-    border: 1px dashed var(--cor-borda-forte);
-    border-radius: var(--raio-lg);
-}
-
-.pix__titulo {
-    font-size: var(--texto-lg);
-}
-
-.pix__linha {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--espaco-3);
-}
-
-.pix__rotulo {
-    font-size: var(--texto-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--cor-texto-suave);
-}
-
-.pix__valor-grupo {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--espaco-2);
-}
-
-.pix__valor {
-    padding: 8px 12px;
-    background: #ffffff;
-    border: 1px solid var(--cor-borda);
-    border-radius: var(--raio-sm);
-    font-family: var(--fonte-mono);
-    font-size: var(--texto-sm);
-    word-break: break-all;
-}
-
-.pix__valor-destaque {
-    font-size: var(--texto-2xl);
-    font-weight: 900;
-    color: var(--cor-primaria);
-}
-
-.pix__subtitulo {
-    margin-bottom: var(--espaco-2);
-    font-size: var(--texto-sm);
-}
-
-.pix__instrucoes p {
-    font-size: var(--texto-sm);
-    color: var(--cor-texto-suave);
 }
 
 /* -------------------------------------------------------------------------

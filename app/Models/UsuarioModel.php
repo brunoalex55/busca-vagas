@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Models;
 
@@ -102,6 +116,52 @@ class UsuarioModel extends Model
     public function totalAtivos(): int
     {
         return $this->where('status', 'ativo')->where('ativo', 1)->countAllResults();
+    }
+
+    /**
+     * Lista as contas que podem participar de uma execucao automatica.
+     *
+     * Este e o filtro base de TODOS os crons: somente quem tem status
+     * ativo e a flag ativa ligada entra na fila. Nada mais e exigido
+     * aqui (cada provedor decide o seu proprio criterio adicional).
+     *
+     * A ordem coloca primeiro quem foi executado ha mais tempo, para o
+     * cron rodar todos antes de repetir alguem.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listarAtivos(int $limite = 0, string $colunaOrdem = 'ultima_execucao_busca_vagas'): array
+    {
+        // A coluna de ordem precisa existir na tabela.
+        $colunas = ['id', 'nome', 'email'];
+
+        if (in_array($colunaOrdem, ['ultima_execucao_busca_vagas', 'ultima_execucao_envio_automatico'], true)) {
+            $colunas[] = $colunaOrdem;
+        }
+
+        // Builder com apenas as colunas necessarias.
+        $builder = $this->db->table($this->table)
+            ->select(implode(', ', $colunas))
+            ->where('status', 'ativo')
+            ->where('ativo', 1);
+
+        // A ordenacao pela coluna de "ultima execucao" so vale quando ela
+        // existe na lista.
+        if (in_array($colunaOrdem, $colunas, true)) {
+            // Nunca executados primeiro.
+            $builder->orderBy($colunaOrdem . ' IS NULL', 'DESC', false);
+            // Depois, os mais atrasados.
+            $builder->orderBy($colunaOrdem, 'ASC');
+        }
+
+        $builder->orderBy('id', 'ASC');
+
+        // Limite opcional de usuarios por execucao.
+        if ($limite > 0) {
+            return $builder->get($limite)->getResultArray();
+        }
+
+        return $builder->get()->getResultArray();
     }
 
     /**

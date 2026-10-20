@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /**
  * --------------------------------------------------------------------------
  * VIEW: PAINEL - VISAO GERAL
@@ -258,9 +272,41 @@ if ($usadasManuais === 1) {
             </div>
         <?php } ?>
 
+        <?php /* O pedido de plano em andamento (o aviso fica no cartao). */ ?>
+        <?php
+        // O pedido que esta na fila do administrador (null quando nao ha).
+        $pedidoEmAndamento = null;
+
+        if (isset($pedidoPendente) && is_array($pedidoPendente)) {
+            $pedidoEmAndamento = $pedidoPendente;
+        }
+        ?>
+
+        <?php if ($pedidoEmAndamento !== null){ ?>
+            <div class="alerta alerta--info">
+                <?php echo icone_svg('info'); ?>
+                <p>
+                    <strong>Pedido em analise:</strong> voce pediu o plano
+                    <strong><?php echo esc(texto_ou($pedidoEmAndamento, 'plano_nome', 'selecionado')) ; ?></strong>.
+                    O administrador vai analisar e liberar o plano em breve.
+                </p>
+
+                <form method="post" action="<?php echo site_url('painel/plano/cancelar') ; ?>">
+                    <button class="botao botao--fantasma botao--pequeno" type="submit">
+                        Cancelar pedido
+                    </button>
+                </form>
+            </div>
+        <?php } ?>
+
         <div class="linha-acoes">
+            <button class="botao botao--primario botao--pequeno" type="button"
+                    data-modal-abrir="modal-plano">
+                <?php echo icone_svg('seta'); ?> Fazer upgrade de plano
+            </button>
+
             <a class="botao botao--secundario botao--pequeno" href="<?php echo site_url('precos') ; ?>">
-                <?php echo icone_svg('site'); ?> Fazer upgrade de plano
+                <?php echo icone_svg('site'); ?> Ver os planos
             </a>
         </div>
     </div>
@@ -541,4 +587,90 @@ if ($usadasManuais === 1) {
     </div>
 </section>
 
+
+<?php /* O modal do pedido de plano (upgrade). */ ?>
+<div class="modal" id="modal-plano" aria-hidden="true" role="dialog"
+     aria-modal="true" aria-labelledby="modal-plano-titulo">
+
+    <div class="modal__janela">
+        <header class="modal__cabecalho">
+            <div>
+                <h3 class="modal__titulo" id="modal-plano-titulo">Fazer upgrade de plano</h3>
+                <p class="modal__subtitulo">
+                    Escolha o plano desejado. O pedido vai para o administrador,
+                    que confirma o pagamento e libera o plano na sua conta.
+                </p>
+            </div>
+
+            <button class="modal__fechar" type="button" data-modal-fechar="modal-plano"
+                    aria-label="Fechar">
+                <?php echo icone_svg('fechar'); ?>
+            </button>
+        </header>
+
+        <div class="modal__corpo">
+            <?php
+            // Os planos que o usuario pode pedir.
+            $listaPlanos = [];
+
+            if (isset($planosDisponiveis) && is_array($planosDisponiveis)) {
+                $listaPlanos = $planosDisponiveis;
+            }
+
+            // O id do plano atual (para ja vir selecionado).
+            $planoAtualId = (int) valor_ou($plano, 'id', 0);
+            ?>
+
+            <form class="formulario" method="post"
+                  action="<?php echo site_url('painel/plano/solicitar') ; ?>">
+
+                <div class="campo">
+                    <label class="campo__rotulo" for="plano_id">Plano desejado</label>
+                    <select class="campo__entrada" id="plano_id" name="plano_id">
+                        <?php foreach ($listaPlanos as $planoDisponivel) { ?>
+                            <?php
+                            // O id do plano da lista.
+                            $idDisponivel = (int) valor_ou($planoDisponivel, 'id', 0);
+
+                            // O preco (pode ser vazio).
+                            $preco = valor_ou($planoDisponivel, 'preco_mensal', null);
+                            $precoTexto = 'sob consulta';
+
+                            if ($preco !== null) {
+                                $precoTexto = 'R$ ' . number_format((float) $preco, 2, ',', '.');
+                            }
+                            ?>
+                            <option value="<?php echo esc($idDisponivel) ; ?>"
+                                    <?php if ($idDisponivel === $planoAtualId){ ?>selected<?php } ?>>
+                                <?php echo esc(texto_ou($planoDisponivel, 'nome', 'Plano')) ; ?> - <?php echo esc($precoTexto) ; ?>/mes
+                            </option>
+                        <?php } ?>
+                    </select>
+                    <span class="campo__ajuda">
+                        O plano so passa a valer depois que o administrador
+                        confirmar o pagamento.
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <label class="campo__rotulo" for="plano_mensagem">Observacao (opcional)</label>
+                    <textarea class="campo__entrada campo__entrada--area"
+                              id="plano_mensagem" name="mensagem" rows="3"
+                              maxlength="1000"
+                              placeholder="Ex.: ja fiz o PIX de hoje..."></textarea>
+                </div>
+
+                <div class="modal__rodape">
+                    <button class="botao botao--secundario" type="button" data-modal-fechar="modal-plano">
+                        Cancelar
+                    </button>
+
+                    <button class="botao botao--primario" type="submit">
+                        <?php echo icone_svg('seta'); ?> Pedir este plano
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <?php echo  $this->endSection() ; ?>

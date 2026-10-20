@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /**
  * --------------------------------------------------------------------------
  * LAYOUT: PAINEL ADMINISTRATIVO
@@ -35,6 +49,8 @@ $menuAdmin = [
     ['rota' => 'admin/distribuicao',    'rotulo' => 'Distribuicao',   'icone' => 'relogio'],
     ['rota' => 'admin/cron',            'rotulo' => 'Agendamento',    'icone' => 'raio'],
     ['rota' => 'admin/planos',           'rotulo' => 'Planos',        'icone' => 'site'],
+    ['rota' => 'admin/planos/solicitacoes', 'rotulo' => 'Pedidos de plano', 'icone' => 'documento'],
+    ['rota' => 'admin/faturamento',      'rotulo' => 'Faturamento',   'icone' => 'alvo'],
     ['rota' => 'admin/divulgavagas',    'rotulo' => 'Divulga Vagas',  'icone' => 'site'],
     ['rota' => 'admin/solicitacoes',    'rotulo' => 'Solicitacoes',   'icone' => 'documento'],
     ['rota' => 'admin/logs',            'rotulo' => 'Logs',           'icone' => 'lupa'],

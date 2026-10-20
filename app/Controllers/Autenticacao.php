@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Controllers;
 
@@ -88,10 +102,18 @@ class Autenticacao extends BaseController
         }
 
         // Conta desativada logicamente.
+        //
+        // A conta bloqueada por FALTA DE PAGAMENTO e a unica excecao:
+        // ela precisa entrar no sistema para ver os dados do PIX e
+        // renovar o plano (a tela /aguardando mostra tudo isso).
         if ((int) $usuario['ativo'] !== 1) {
-            return redirect()->back()
-                ->withInput()
-                ->with('erro', 'Esta conta esta desativada. Fale com o suporte.');
+            $bloqueadoPorPagamento = (int) valor_ou($usuario, 'bloqueado_por_pagamento', 0) === 1;
+
+            if (! $bloqueadoPorPagamento) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('erro', 'Esta conta esta desativada. Fale com o suporte.');
+            }
         }
 
         // Monta os dados da sessao exatamente como definido nas regras.

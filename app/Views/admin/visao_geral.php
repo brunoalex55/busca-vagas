@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /**
  * --------------------------------------------------------------------------
  * VIEW: ADMIN - VISAO GERAL
@@ -36,6 +50,9 @@ $seloStatus = static function (string $status): array {
     </div>
 
     <div class="painel__acoes">
+        <a class="botao botao--secundario botao--pequeno" href="<?php echo  site_url('admin/faturamento') ; ?>">
+            <?php echo  icone_svg('alvo') ; ?> Faturamento
+        </a>
         <a class="botao botao--secundario botao--pequeno" href="<?php echo  site_url('admin/chaves') ; ?>">
             <?php echo  icone_svg('raio') ; ?> Gerenciar chaves
         </a>
@@ -46,6 +63,30 @@ $seloStatus = static function (string $status): array {
         <?php } ?>
     </div>
 </section>
+
+<?php /* O alerta dos pedidos de plano pendentes. */ ?>
+<?php if ((int) $pedidosPlano > 0){ ?>
+    <div class="alerta alerta--atencao">
+        <?php echo  icone_svg('info') ; ?>
+        <p>
+            <strong><?php echo  (int) $pedidosPlano ; ?> pedido(s) de plano</strong>
+            esperando sua analise. O usuario escolheu um plano novo pelo painel
+            dele e precisa da sua confirmacao.
+            <a href="<?php echo  site_url('admin/planos/solicitacoes') ; ?>">Ver os pedidos</a>
+        </p>
+    </div>
+<?php } ?>
+
+<?php /* O alerta das contas bloqueadas por falta de pagamento. */ ?>
+<?php if ((int) $bloqueadosPagamento > 0){ ?>
+    <div class="alerta alerta--erro">
+        <?php echo  icone_svg('escudo') ; ?>
+        <p>
+            <strong><?php echo  (int) $bloqueadosPagamento ; ?> conta(s) bloqueada(s) por falta de pagamento.</strong>
+            <a href="<?php echo  site_url('admin/faturamento') ; ?>">Ver no relatorio de faturamento</a>
+        </p>
+    </div>
+<?php } ?>
 
 <?php /* Cards de metrica. */ ?>
 <div class="grade-metricas">

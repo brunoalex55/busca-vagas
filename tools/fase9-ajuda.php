@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 /**
  * --------------------------------------------------------------------------
@@ -96,6 +110,65 @@ if ($acao === 'tela') {
 
     // A resposta: o status e se o texto esta na pagina.
     echo $status . '|' . (strpos($html, $texto) !== false ? 'sim' : 'nao');
+
+    exit(0);
+}
+
+if ($acao === 'pedido') {
+    // O id do pedido de plano pendente mais recente (o teste do modal).
+    $linha = $db->table('solicitacoes_plano')
+        ->where('status', 'pendente')
+        ->orderBy('id', 'DESC')
+        ->get()
+        ->getRowArray();
+
+    if ($linha === null || $linha === []) {
+        echo '0';
+        exit(0);
+    }
+
+    echo (string) $linha['id'];
+
+    exit(0);
+}
+
+if ($acao === 'criar-usuario-modal') {
+    // O usuario de teste do modal (do painel do usuario).
+    $email = 'fase9-modal@teste.local';
+
+    $db->table('usuarios')->where('email', $email)->delete();
+
+    $db->table('usuarios')->insert([
+        'nome'          => 'Teste Modal',
+        'email'         => $email,
+        'senha'         => password_hash('teste123', PASSWORD_DEFAULT),
+        'perfil'        => 'usuario',
+        'status'        => 'ativo',
+        'ativo'         => 1,
+        'plano_id'      => 1,
+        'criado_em'     => date('Y-m-d H:i:s'),
+        'atualizado_em' => date('Y-m-d H:i:s'),
+    ]);
+
+    $linha = $db->table('usuarios')->where('email', $email)->get()->getRowArray();
+
+    echo (string) $linha['id'];
+
+    exit(0);
+}
+
+if ($acao === 'apagar-usuario-modal') {
+    // Apaga o usuario de teste do modal (e os pedidos dele).
+    $email = 'fase9-modal@teste.local';
+
+    $linha = $db->table('usuarios')->where('email', $email)->get()->getRowArray();
+
+    if ($linha !== null && $linha !== []) {
+        $db->table('solicitacoes_plano')->where('usuario_id', (int) $linha['id'])->delete();
+        $db->table('usuarios')->where('id', (int) $linha['id'])->delete();
+    }
+
+    echo 'ok';
 
     exit(0);
 }

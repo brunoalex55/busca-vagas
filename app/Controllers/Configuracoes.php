@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Controllers;
 
@@ -310,10 +324,13 @@ class Configuracoes extends PainelBase
             'curriculo_pdf' => $relativo,
         ]);
 
-        // Remove o arquivo antigo, se existia.
-        if ($anterior !== null && $anterior !== $relativo) {
-            $this->curriculos->remover($anterior);
-        }
+        // O arquivo anterior NAO e apagado.
+        //
+        // O curriculo e o unico documento que prova a candidatura: se
+        // ele sumisse, o bot pararia de candidatar sem o usuario saber
+        // por que. O arquivo antigo fica no disco (a pasta e do
+        // usuario) e so e removido pela acao explicita de remover o
+        // curriculo.
 
         return redirect()
             ->to(site_url('painel/configuracoes'))

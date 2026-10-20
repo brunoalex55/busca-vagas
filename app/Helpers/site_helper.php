@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 /**
  * --------------------------------------------------------------------------
@@ -384,6 +398,7 @@ if (! function_exists('icone_svg')) {
             'info'      => '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
             'local'     => '<path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
             'calendario' => '<rect x="4" y="5" width="16" height="16" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+            'fechar'    => '<path d="M6 6l12 12M18 6L6 18"/>',
         ];
 
         // Devolve string vazia para nomes desconhecidos.

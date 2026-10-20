@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 use CodeIgniter\Router\RouteCollection;
 
@@ -91,6 +105,15 @@ $routes->group('painel', ['filter' => ['autenticacao', 'usuarioativo']], static 
     // pelo admin em /admin/cron.
     $routes->post('executar-vagas', 'Painel::executarConsultaManual');
     $routes->post('executar-emails', 'Painel::executarEnvioManual');
+
+    // ---------------------------------------------------------------------
+    // PEDIDO DE PLANO (upgrade)
+    // ---------------------------------------------------------------------
+    // O usuario escolhe o plano dentro do painel: o pedido vai para a
+    // fila do administrador (que aprova ou recusa). O plano so passa a
+    // valer depois da aprovacao.
+    $routes->post('plano/solicitar', 'PainelPlano::solicitar');
+    $routes->post('plano/cancelar', 'PainelPlano::cancelar');
 
     // ---------------------------------------------------------------------
     // PALAVRAS-CHAVE
@@ -233,10 +256,25 @@ $routes->group('admin', ['filter' => ['autenticacao', 'usuarioativo', 'admin']],
     $routes->post('planos/reativar/(:num)', 'Admin\AdminPlanos::reativar/$1');
     $routes->get('planos/(:segment)/usuarios', 'Admin\AdminPlanos::usuariosDoPlano/$1', ['as' => 'admin_planos_usuarios']);
 
+    // Os pedidos de plano que os usuarios enviaram do painel deles.
+    $routes->get('planos/solicitacoes', 'Admin\AdminPlanos::solicitacoes', ['as' => 'admin_planos_solicitacoes']);
+    $routes->post('planos/solicitacoes/(:num)/aprovar', 'Admin\AdminPlanos::aprovarSolicitacao/$1');
+    $routes->post('planos/solicitacoes/(:num)/recusar', 'Admin\AdminPlanos::recusarSolicitacao/$1');
+
     // O plano do usuario (atribuir, remover e o limite manual).
     $routes->post('usuarios/(:num)/atribuir-plano', 'Admin\AdminUsuarios::atribuirPlano/$1');
     $routes->post('usuarios/(:num)/remover-plano', 'Admin\AdminUsuarios::removerPlano/$1');
     $routes->post('usuarios/(:num)/salvar-limite-manual', 'Admin\AdminUsuarios::salvarLimiteManual/$1');
+
+    // ---------------------------------------------------------------------
+    // FATURAMENTO (FASE 9)
+    // ---------------------------------------------------------------------
+    // O relatorio mensal (quantos usuarios houve em cada mes) e o
+    // bloqueio por falta de pagamento.
+    $routes->get('faturamento', 'Admin\AdminFaturamento::index', ['as' => 'admin_faturamento']);
+    $routes->post('usuarios/bloquear-pagamento', 'Admin\AdminFaturamento::bloquearPagamento');
+    $routes->post('usuarios/(:num)/bloquear-pagamento', 'Admin\AdminFaturamento::bloquearPagamento/$1');
+    $routes->post('usuarios/(:num)/cobrar-pagamento', 'Admin\AdminFaturamento::cobrarPagamento/$1');
 
     // ---------------------------------------------------------------------
     // AGENDAMENTO (FASE 7)

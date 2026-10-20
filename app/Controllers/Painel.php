@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Controllers;
 
@@ -8,6 +22,8 @@ use App\Libraries\ResolvedorPlano;
 use App\Models\EmailEnviadoModel;
 use App\Models\LogConsultaModel;
 use App\Models\PalavraChaveModel;
+use App\Models\PlanoModel;
+use App\Models\SolicitacaoPlanoModel;
 use App\Models\VagaModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
@@ -89,6 +105,20 @@ class Painel extends PainelBase
         $ehAdmin          = $this->sessao->get('perfil') === 'admin';
         $execucoesManuais = $gerenciador->usuarioPodeExecutarManualmente($this->usuarioId);
 
+        // Os planos que o usuario pode pedir (o upgrade).
+        $planosDisponiveis = model(PlanoModel::class)->listarAtivos();
+
+        // O pedido de plano pendente e o historico dos pedidos.
+        $pedidosPlano   = model(SolicitacaoPlanoModel::class)->listarDoUsuario($this->usuarioId, 5);
+        $pedidoPendente = null;
+
+        foreach ($pedidosPlano as $pedido) {
+            if ((string) valor_ou($pedido, 'status', '') === 'pendente') {
+                $pedidoPendente = $pedido;
+                break;
+            }
+        }
+
         // Dados entregues a view.
         return view('painel/inicio', $this->dadosPainel('Visao geral', [
             'usuario'           => $usuario,
@@ -112,6 +142,9 @@ class Painel extends PainelBase
             'plano'             => $resolvedor->obterPlanoDoUsuario($this->usuarioId),
             'limitesPlano'      => $limitesPlano,
             'usoPlano'          => $usoPlano,
+            'planosDisponiveis' => $planosDisponiveis,
+            'pedidoPendente'    => $pedidoPendente,
+            'pedidosPlano'      => $pedidosPlano,
         ]));
     }
 

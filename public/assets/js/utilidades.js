@@ -1,3 +1,17 @@
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 'use strict';
 
 /**
@@ -332,12 +346,119 @@
         }, tipo === 'erro' ? 9000 : 6000);
     }
 
+
+    /**
+     * Abre um modal pelo id.
+     *
+     * @param {string} id O id do modal.
+     * @returns {void}
+     */
+    function abrirModal(id) {
+        const modal = document.getElementById(id);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.add('modal--aberto');
+        modal.removeAttribute('aria-hidden');
+        document.body.classList.add('modal-aberto');
+
+        // O foco vai para o primeiro campo util da janela.
+        const campo = modal.querySelector('select, input, textarea, button');
+
+        if (campo && typeof campo.focus === 'function') {
+            campo.focus();
+        }
+    }
+
+    /**
+     * Fecha um modal pelo id.
+     *
+     * @param {string} id O id do modal.
+     * @returns {void}
+     */
+    function fecharModal(id) {
+        const modal = document.getElementById(id);
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('modal--aberto');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-aberto');
+    }
+
+    /**
+     * Liga os botoes que abrem e fecham os modais.
+     *
+     * @returns {void}
+     */
+    function iniciarModais() {
+        // Todos os botoes que abrem um modal.
+        const botoes = document.querySelectorAll('[data-modal-abrir]');
+
+        botoes.forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                abrirModal(botao.getAttribute('data-modal-abrir'));
+            });
+        });
+
+        // Todos os botoes que fecham um modal.
+        const fechadores = document.querySelectorAll('[data-modal-fechar]');
+
+        fechadores.forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                const alvo = botao.getAttribute('data-modal-fechar');
+
+                // Sem alvo: fecha o modal que contem o botao.
+                if (!alvo) {
+                    const pai = botao.closest('.modal');
+
+                    if (pai) {
+                        fecharModal(pai.id);
+                    }
+
+                    return;
+                }
+
+                fecharModal(alvo);
+            });
+        });
+
+        // O clique fora da janela fecha o modal.
+        const modais = document.querySelectorAll('.modal');
+
+        modais.forEach(function (modal) {
+            modal.addEventListener('click', function (evento) {
+                // O clique foi na propria camada (fora da janela).
+                if (evento.target === modal) {
+                    fecharModal(modal.id);
+                }
+            });
+        });
+
+        // A tecla ESC fecha o modal aberto.
+        document.addEventListener('keydown', function (evento) {
+            if (evento.key !== 'Escape') {
+                return;
+            }
+
+            const aberto = document.querySelector('.modal--aberto');
+
+            if (aberto) {
+                fecharModal(aberto.id);
+            }
+        });
+    }
     // Inicializacao geral.
     aoPronto(function () {
         iniciarToasts();
         iniciarVerSenha();
         iniciarCopiar();
         iniciarMascaras();
+        iniciarModais();
     });
 
     // Disponibiliza helpers para os outros arquivos do projeto.

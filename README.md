@@ -1,3 +1,15 @@
+<!--
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+-->
+
 # BuscaVagas PRO
 
 > SaaS de busca de empregos: encontra vagas no Google Jobs, monta a
@@ -8,6 +20,72 @@ Construido em **CodeIgniter 4**, **PHP 8.4**, **MySQL 8 / MariaDB 10.4+**,
 com **HTML5 semantico + CSS3 puro** e **JavaScript vanilla** (ES6+).
 Sem Bootstrap, Tailwind, jQuery, React, Node.js ou qualquer outro
 framework: o front-end e o back-end usam apenas o que ja vem no PHP.
+
+---
+
+## A dor real
+
+Quem procura emprego gasta horas por semana fazendo sempre a mesma coisa:
+procurar a vaga, ler o anuncio, descobrir o e-mail de contato, escrever
+uma mensagem curta, anexar o curriculo e enviar. Dez vagas dao uma hora.
+Cinquenta comem a tarde inteira — e toda semana comeca de novo.
+
+Fazer isso na mao tambem queima a conta do Gmail: mandar vinte mensagens
+parecidas em seguida e exatamente o que os filtros de spam foram feitos
+para pegar. O candidato ve as candidaturas sumirem sem saber por que, e
+a conta pode ser bloqueada de vez.
+
+Tem ainda o problema do controle: depois de quarenta candidaturas fica
+impossivel lembrar o que ja foi enviado, para qual empresa, o que
+respondeu e qual vaga ja tinha sido candidatada.
+
+**O BuscaVagas PRO existe para tirar essa parte repetitiva da frente.**
+O usuario diz o que procura (termo + cidade), o sistema encontra as
+vagas, extrai o e-mail de contato, manda o curriculo com uma mensagem
+curta — pela conta Gmail do proprio usuario, num ritmo que nao parece
+spam — e mostra exatamente o que foi enviado, para quem e se a empresa
+confirmou o recebimento.
+
+## O que este projeto resolve
+
+- **Busca que roda sozinha** — palavras-chave e cidades configuradas uma
+  vez; o sistema procura no horario agendado (ou sob demanda) e traz as
+  vagas para o painel.
+- **Candidatura enviada pelo e-mail do proprio usuario** — cada um usa a
+  sua conta Gmail com a sua APP PASSWORD. Nao existe e-mail global: uma
+  conta bloqueada nao afeta ninguem mais.
+- **Envio que nao parece spam** — janela de horario permitida, dias da
+  semana, intervalo entre os envios e limite diario por plano.
+- **O curriculo nunca sai da conta** — o PDF fica na pasta do usuario e
+  vai anexado sozinho.
+- **Duas fontes de vaga, um painel** — Google Jobs (SerpApi) e Divulga
+  Vagas (bot com navegador de verdade), atras da mesma interface de
+  adaptador: um terceiro provedor entra sem mexer no resto do sistema.
+- **Prova de que deu certo** — o site confirma o envio e o sistema guarda
+  essa confirmacao, vaga por vaga.
+- **Planos que fazem sentido** — cada plano define palavras-chave,
+  cidades por termo, envios por dia e quantas contas cabem; os limites
+  sao sempre conferidos no servidor.
+- **Privacidade entre os usuarios** — a vaga pertence a conta que a
+  encontrou: ninguem ve (nem candidata) o que nao e dele.
+- **Administracao que mostra o dinheiro** — relatorio mensal de quantos
+  usuarios o sistema teve, receita estimada e bloqueio das contas que
+  pararam de pagar.
+
+## Por que open source
+
+Este projeto nasceu de um problema pessoal. Cada funcionalidade foi
+implementada conforme a necessidade aparecia: primeiro a busca, depois a
+candidatura, depois o bot do segundo site, depois os planos porque o uso
+crescia e os limites passaram a importar.
+
+Nao existe agencia grande por tras dele nem verba para trafego pago. Por
+isso decidi abrir o codigo: para medir a aceitacao, para ajudar quem tem
+o mesmo problema e, a partir da visibilidade que isso gera, conseguir
+trabalho de consultoria.
+
+Se ele te ajuda, usa. Se quiser apoiar o projeto, o Pix no fim deste
+README e voluntario.
 
 ---
 
@@ -758,7 +836,7 @@ Ha ainda tres ferramentas de conferencia do proprio projeto:
 # detector do Bloco C: ternario, sintaxe alternativa e eco curto em app/
 php tools/detector-c1.php
 
-# checklist final: confere os 184 itens do plano e gera
+# checklist final: confere os 217 itens do plano e gera
 # docs/checklist-final.md
 php tools/checklist/verificar.php
 
@@ -798,6 +876,10 @@ powershell -File tools/fase8-cronjob.ps1
 # a Fase 9 (planos por usuario e isolamento de vagas)
 php tools/fase9-testes.php
 powershell -File tools/fase9-admin.ps1
+
+# a Fase 9 b (pedido de plano, faturamento e bloqueio por pagamento)
+php tools/fase9-planos-faturamento.php
+powershell -File tools/fase9-modal-faturamento.ps1
 
 # o SQL de sanidade: diz se ha vaga vazada entre usuarios
 php tools/fase9-sanidade.php
@@ -876,11 +958,20 @@ some do menu, o interruptor de envio automatico nao aparece), mas a
 
 ### 34.4 O upgrade e manual
 
-O projeto **nao tem gateway de pagamento**: o botao "Fazer upgrade de
-plano" leva para `/precos`, e a mudanca de plano e feita pelo
-administrador (depois do pagamento do Pix, confirmado por ele). O
-cadastro guarda o plano escolhido, e o admin ve o pedido como
-"Pendente (Plano X)".
+O projeto **nao tem gateway de pagamento**: quem paga paga no Pix (a
+chave fica na tela do administrador) e quem libera o plano e o
+administrador.
+
+O pedido sai de dentro do painel do usuario: o botao **"Fazer upgrade
+de plano"** abre uma janela (o `modal`) com a lista de planos, o campo
+de observacao e o botao de envio. O que o usuario escolhe vira um
+**pedido** (tabela `solicitacoes_plano`), que aparece na fila do
+administrador em `/admin/planos/solicitacoes`.
+
+O plano da conta **nao muda na hora**: quem muda e o admin, aprovar
+(o plano passa a valer na conta) ou recusar (com a justificativa, que
+o usuario ve no painel). O usuario pode cancelar o pedido pendente a
+qualquer momento.
 
 ---
 
@@ -943,10 +1034,162 @@ HAVING total > 1;
 
 ---
 
-## 35. Licenca
+## 35. Pedido de plano, faturamento e bloqueio por pagamento
 
-O framework CodeIgniter 4 e distribuido sob a licenca MIT (veja
-`LICENSE`). O codigo do projeto segue a mesma licenca.
+### 35.1 O pedido de plano
+
+O usuario escolhe o plano dentro do painel (a janela "Fazer upgrade de
+plano") e o pedido vai para a fila do administrador.
+
+| Onde | O que acontece |
+|---|---|
+| `/painel` | O botao abre a janela com os planos e o campo de observacao. |
+| `POST /painel/plano/solicitar` | Grava o pedido (um pendente por usuario: um novo substitui o antigo). |
+| `POST /painel/plano/cancelar` | O usuario cancela o pedido pendente. |
+| `/admin/planos/solicitacoes` | A fila do admin, com o filtro por situacao. |
+| `POST /admin/planos/solicitacoes/{id}/aprovar` | O plano passa a valer na conta. |
+| `POST /admin/planos/solicitacoes/{id}/recusar` | O pedido e recusado (com a justificativa). |
+
+O painel administrativo mostra um alerta quando ha pedido pendente, e
+o card "Meu plano" avisa o usuario que o pedido esta em analise.
+
+### 35.2 O relatorio de faturamento
+
+`/admin/faturamento` mostra, mes a mes:
+
+- quantos usuarios o sistema tinha (a base que cresce);
+- quantos entraram novos no mes;
+- quantas contas estavam bloqueadas por falta de pagamento;
+- a receita estimada (as contas ativas pelo preco do plano).
+
+O numero de usuarios e **exato** (vem do banco). A receita e uma
+**estimativa**: o sistema guarda o plano de cada conta, mas nao o
+historico de troca de plano.
+
+### 35.3 O bloqueio por falta de pagamento
+
+O administrador pode bloquear uma conta por falta de pagamento (pelo
+detalhe do usuario ou pela tela de faturamento). O que acontece:
+
+- a conta para de funcionar (os crons pulam quem nao esta ativo);
+- o bloqueio vale **na hora**, mesmo com a sessao do usuario aberta
+  (o filtro confere o status no banco a cada requisicao);
+- a tela do usuario volta a mostrar os **dados do PIX** (chave e valor)
+  para a renovacao, com o motivo do bloqueio;
+- o administrador ve a conta na lista de bloqueados e pode liberar o
+  acesso quando o pagamento cair.
+
+O admin nao bloqueia a propria conta, e o bloqueio por pagamento e a
+unica conta desativada que ainda consegue entrar no sistema (para
+ver os dados e renovar). Os demais bloqueios continuam exigirindo o
+contato com o suporte.
+
+### 35.4 Os crons so com usuarios ativos
+
+Todos os crons (SerpApi e Divulga Vagas) usam a lista de contas ativas
+(`UsuarioModel::listarAtivos()`): status ativo e a flag ativa ligada.
+Uma conta bloqueada por falta de pagamento, por estar pendente ou por
+qualquer outro motivo nao entra na fila — nem para buscar vaga, nem
+para candidatar, nem para enviar e-mail.
+
+---
+## Licença
+
+Este projeto usa a licença **MIT** — o mesmo texto do arquivo
+[`LICENSE`](LICENSE).
+
+O que isso significa, na pratica:
+
+- voce pode usar, copiar, alterar e redistribuir o codigo, inclusive
+  para uso comercial, mantendo o aviso de copyright;
+- o codigo e entregue **"como esta"**, **sem garantia nenhuma**: o
+  autor nao se responsabiliza por danos, perda de dados, indisponibilidade
+  ou qualquer resultado do uso do sistema;
+- a licenca MIT cobre o codigo do projeto. O framework CodeIgniter 4
+  tambem e MIT e vem com a sua propria licenca em `vendor/`.
+
+**A doação não compra licença especial.** O Pix da seção
+"Apoie este projeto" é uma doação para manter o projeto vivo e não
+concede nenhuma licença diferente da MIT, nem direito de uso
+exclusivo, nem garantia de suporte.
+
+---
+
+## Imagens do ambiente
+
+> **Atenção:** as imagens abaixo são *placeholders*. Elas devem ser
+> substituídas pelas capturas reais do seu ambiente (as do repositório
+> foram feitas com dados de teste).
+
+### Login
+
+![Tela de login](docs/images/login.png)
+
+### Cadastro
+
+![Tela de cadastro](docs/images/cadastro.png)
+
+### Painel do usuário
+
+![Painel do usuário com o plano, as vagas e o checklist](docs/images/painel-usuario.png)
+
+### Vagas encontradas
+
+![Listagem de vagas no painel](docs/images/vagas.png)
+
+### Palavras-chave
+
+![Formulário de palavras-chave e cidades](docs/images/palavras-chave.png)
+
+### Candidatura automática (Divulga Vagas)
+
+![Tela do segundo provedor, com o histórico por vaga](docs/images/divulgavagas.png)
+
+### Plano e upgrade
+
+![Janela de upgrade de plano](docs/images/upgrade-plano.png)
+
+### Painel administrativo
+
+![Visão geral do administrador](docs/images/admin-dashboard.png)
+
+### Planos
+
+![Tela de CRUD dos planos](docs/images/planos.png)
+
+### Pedidos de plano
+
+![Fila de pedidos de plano do usuário](docs/images/pedidos-plano.png)
+
+### Relatório de faturamento
+
+![Relatório mensal e bloqueio por falta de pagamento](docs/images/faturamento.png)
+
+---
+
+## Apoie este projeto
+
+Este projeto é **open source** e roda no **servidor de quem usa**: o
+código é seu e o servidor também. A doação é **voluntária** e **não
+inclui hospedagem, suporte nem instalação**.
+
+### Pix (doação)
+
+```
+bruno@brunoalexandre.com
+```
+
+### Precisa de ajuda para colocar no ar?
+
+Também faço implantação de ponta a ponta e treinamento para quem quer
+colocar o sistema em produção: preparar o servidor, banco de dados,
+agendamento (cron), bot com navegador real e o treinamento de quem vai
+usar no dia a dia.
+
+- Contato: `bruno@brunoalexandre.com`
+- Isso é um **serviço à parte**, com orçamento próprio.
+- O Pix acima é **exclusivamente para doação**: ele não contrata, não
+  garante e não substitui o serviço.
 
 ---
 

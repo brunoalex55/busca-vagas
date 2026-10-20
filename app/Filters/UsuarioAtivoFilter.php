@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Filters;
 
@@ -29,8 +43,27 @@ class UsuarioAtivoFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        // Le o status gravado na sessao no momento do login.
+        // O status vem do banco (e nao da sessao): quando o
+        // administrador bloqueia a conta por falta de pagamento, o
+        // bloqueio tem que valer na hora, mesmo com a sessao aberta.
+        $usuarioId = (int) session()->get('usuario_id');
         $status = session()->get('status');
+
+        if ($usuarioId > 0) {
+            $conta = db_connect()->table('usuarios')
+                ->select('status, ativo')
+                ->where('id', $usuarioId)
+                ->get()
+                ->getRowArray();
+
+            if ($conta !== null && $conta !== []) {
+                $status = (string) $conta['status'];
+
+                // A sessao passa a refletir a conta (o proximo pedido ja
+                // usa o status novo).
+                session()->set('status', $status);
+            }
+        }
 
         // Se nao estiver ativo, manda para a tela de espera.
         if ($status !== 'ativo') {

@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /**
  * --------------------------------------------------------------------------
  * VIEW: AGUARDANDO APROVACAO
@@ -29,8 +43,26 @@ if ($temPendente !== null) {
     $temPendente = (bool) $temPendente;
 }
 
-// Situacao atual.
-$status = session()->get('status');
+// Situacao atual (vem do controller, que le o status do banco).
+$status = 'pendente';
+
+if (isset($statusConta) && $statusConta !== '') {
+    $status = (string) $statusConta;
+}
+
+// A conta foi bloqueada por falta de pagamento? (a renovacao).
+$renovacaoPendente = false;
+
+if (isset($bloqueadoPagamento)) {
+    $renovacaoPendente = (bool) $bloqueadoPagamento;
+}
+
+// O motivo do bloqueio por pagamento.
+$motivoRenovacao = '';
+
+if (isset($motivoBloqueio)) {
+    $motivoRenovacao = (string) $motivoBloqueio;
+}
 
 // Nome do usuario.
 $nome = session()->get('nome');
@@ -63,7 +95,24 @@ if ($nome === null || $nome === '') {
                 <?php echo  icone_svg($iconeSituacao) ; ?>
                 </span>
 
-                <?php if ($status === 'bloqueado'){ ?>
+                <?php if ($status === 'bloqueado' && $renovacaoPendente){ ?>
+                    <h1 class="cartao-aprovacao__titulo">Renove seu plano</h1>
+                    <p class="cartao-aprovacao__texto">
+                        Ola, <?php echo  esc($nome) ; ?>. O acesso a sua conta foi
+                        suspenso por falta de pagamento.
+                    </p>
+
+                    <?php if ($motivoRenovacao !== ''){ ?>
+                        <p class="cartao-aprovacao__texto">
+                            Motivo: <strong><?php echo esc($motivoRenovacao) ; ?></strong>.
+                        </p>
+                    <?php } ?>
+
+                    <p class="cartao-aprovacao__texto">
+                        Faca o pagamento abaixo e avise o administrador. Assim que
+                        o pagamento for confirmado, a sua conta volta a funcionar.
+                    </p>
+                <?php } elseif ($status === 'bloqueado'){ ?>
                     <h1 class="cartao-aprovacao__titulo">Sua conta esta bloqueada</h1>
                     <p class="cartao-aprovacao__texto">
                         Ola, <?php echo  esc($nome) ; ?>. O acesso a sua conta foi suspenso.
@@ -94,7 +143,7 @@ if ($nome === null || $nome === '') {
                 <?php } ?>
             </header>
 
-            <?php if ($status !== 'bloqueado'){ ?>
+            <?php if ($status !== 'bloqueado' || $renovacaoPendente){ ?>
 
                 <?php /* Dados do PIX. */ ?>
                 <div class="pix">
@@ -136,9 +185,15 @@ if ($nome === null || $nome === '') {
                 <div class="alerta alerta--atencao">
                     <?php echo  icone_svg('escudo') ; ?>
                     <p>
-                        A liberacao e feita manualmente. Apos pagar, clique em
-                        "Informar pagamento" e aguarde a confirmacao em ate
-                        <strong>24 horas uteis</strong>.
+                        <?php if ($renovacaoPendente){ ?>
+                            Faca o pagamento e clique em
+                            <strong>Informar pagamento</strong>. Assim que o
+                            administrador confirmar, o acesso volta.
+                        <?php } else { ?>
+                            A liberacao e feita manualmente. Apos pagar, clique em
+                            "Informar pagamento" e aguarde a confirmacao em ate
+                            <strong>24 horas uteis</strong>.
+                        <?php } ?>
                     </p>
                 </div>
 

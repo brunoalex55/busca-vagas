@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 /**
  * --------------------------------------------------------------------------
  * VIEW: ADMIN - FICHA DO USUARIO
@@ -96,8 +110,40 @@ if (! $eAdmin && $limiteManuais > 0) {
                 </button>
             </form>
         <?php } ?>
+
+        <?php /* O bloqueio por falta de pagamento (a conta para e o
+               usuario volta a ver os dados do PIX para renovar). */ ?>
+        <?php if ($status === 'ativo'){ ?>
+            <form method="post" action="<?php echo  esc($base . '/bloquear-pagamento') ; ?>"
+                  data-confirmar="Bloquear esta conta por falta de pagamento? O usuario vera os dados do PIX para renovar.">
+                <input type="hidden" name="motivo" value="Falta de pagamento da mensalidade.">
+                <button type="submit" class="botao botao--perigo botao--pequeno">
+                    <?php echo  icone_svg('escudo') ; ?> Bloquear por pagamento
+                </button>
+            </form>
+        <?php } ?>
     </div>
 </section>
+
+<?php /* O aviso do bloqueio por pagamento (com os dados para cobrar). */ ?>
+<?php if ((int) valor_ou($usuario, 'bloqueado_por_pagamento', 0) === 1){ ?>
+    <div class="alerta alerta--erro">
+        <?php echo  icone_svg('escudo') ; ?>
+        <p>
+            <strong>Conta bloqueada por falta de pagamento.</strong>
+            <?php echo  esc(texto_ou($usuario, 'motivo_bloqueio', 'Falta de pagamento da mensalidade.')) ; ?>
+            <br>
+            Chave PIX: <code><?php echo  esc(texto_ou($pagamento, 'chave_pix', 'nao configurada')) ; ?></code>
+            &middot; Valor: R$ <?php echo  esc(number_format((float) valor_ou($pagamento, 'valor_mensal', 0), 2, ',', '.')) ; ?>/mes
+        </p>
+
+        <form method="post" action="<?php echo  esc($base . '/cobrar-pagamento') ; ?>">
+            <button type="submit" class="botao botao--primario botao--pequeno">
+                <?php echo  icone_svg('check') ; ?> Pagamento confirmado
+            </button>
+        </form>
+    </div>
+<?php } ?>
 
 <?php /* Cards de metrica. */ ?>
 <div class="grade-metricas">

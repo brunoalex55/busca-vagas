@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Libraries;
 
@@ -373,13 +387,18 @@ class CandidaturaDivulgaVagas
     /**
      * Candidata a UMA vaga de cada usuario ativo (um por vez).
      *
+     * O filtro e o mesmo de todos os crons: somente contas ATIVAS
+     * entram na fila. A candidatura por bot nao depende da chave
+     * "envio automatico" (que e do SerpApi): quem tem vaga na fila e
+     * conta ativa, candida.
+     *
      * @return array<string, mixed>
      */
     public function candidatarGlobal(string $origem = 'cron', int $maximoVagas = 0): array
     {
         $resumo = $this->resumoVazio();
 
-        $usuarios = model('UsuarioModel')->listarParaEnvio();
+        $usuarios = model('UsuarioModel')->listarAtivos();
 
         foreach ($usuarios as $usuario) {
             $detalhe = $this->candidatarDoUsuario((int) $usuario['id'], $origem, $maximoVagas);
@@ -420,18 +439,33 @@ class CandidaturaDivulgaVagas
         }
 
         // O curriculo em PDF do usuario.
-        $curriculo = $this->caminhoDoCurriculo($usuarioId);
+        $curriculo = $this->situacaoDoCurriculo($usuarioId);
 
-        if ($curriculo === '') {
+        if ($curriculo['caminho'] === '') {
             $resumo['bot_ok'] = false;
             $resumo['erros']++;
-            $resumo['mensagem'] = 'O usuario nao tem curriculo em PDF cadastrado.';
+
+            // A mensagem diz exatamente o que aconteceu (o usuario
+            // precisa saber se nao cadastrou o PDF ou se o arquivo
+            // sumiu do disco).
+            if ($curriculo['motivo'] === 'arquivo_ausente') {
+                $resumo['mensagem'] = 'O curriculo em PDF esta cadastrado, mas o arquivo nao esta no servidor. Envie o arquivo novamente.';
+            } else {
+                $resumo['mensagem'] = 'O usuario nao tem curriculo em PDF cadastrado.';
+            }
+
+            // O erro fica gravado na vaga: e assim que o usuario e o
+            // admin descobrem a falha (antes ele sumia).
+            $this->vagas->atualizarCandidaturaDivulgaVagas($vagaId, $usuarioId, [
+                'candidatura_divulgavagas_tentativas' => (int) texto_ou($vaga, 'candidatura_divulgavagas_tentativas', 0) + 1,
+                'candidatura_divulgavagas_erro'        => mb_substr((string) $resumo['mensagem'], 0, 900),
+            ]);
 
             return;
         }
 
         // Chamada ao bot (MODO CANDIDATAR).
-        $retorno = $this->provedor->candidatar($urlEnvio, $curriculo, $usuarioId);
+        $retorno = $this->provedor->candidatar($urlEnvio, $curriculo['caminho'], $usuarioId);
 
         // Falha do bot: conta a tentativa e decide a situacao.
         if (! $retorno['sucesso']) {
@@ -598,25 +632,43 @@ class CandidaturaDivulgaVagas
     }
 
     /**
-     * Caminho do curriculo em PDF do usuario (no disco).
+     * A situacao do curriculo em PDF do usuario.
+     *
+     * Distingue os dois casos que impedem a candidatura:
+     *   - 'sem_curriculo': o usuario nunca cadastrou um PDF;
+     *   - 'arquivo_ausente': o PDF esta cadastrado, mas o arquivo sumiu
+     *     do disco (e o que o admin precisa saber para recuperar).
+     *
+     * @return array{caminho: string, motivo: string}
      */
-    private function caminhoDoCurriculo(int $usuarioId): string
+    private function situacaoDoCurriculo(int $usuarioId): array
     {
         $configuracao = $this->configuracoes->obterOuPadroes($usuarioId);
         $caminho = valor_ou($configuracao, 'curriculo_pdf', null);
 
+        // Nenhum curriculo cadastrado.
         if ($caminho === null || $caminho === '') {
-            return '';
+            return [
+                'caminho' => '',
+                'motivo'  => 'sem_curriculo',
+            ];
         }
 
         // O caminho guardado e relativo a pasta de uploads.
         $completo = $this->curriculos->caminhoAbsoluto((string) $caminho);
 
+        // O arquivo esta cadastrado, mas nao existe no disco.
         if ($completo === '' || ! is_file($completo)) {
-            return '';
+            return [
+                'caminho' => '',
+                'motivo'  => 'arquivo_ausente',
+            ];
         }
 
-        return $completo;
+        return [
+            'caminho' => $completo,
+            'motivo'  => '',
+        ];
     }
 
     /**

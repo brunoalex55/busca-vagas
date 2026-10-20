@@ -15,7 +15,7 @@ php tools/revisao-final.php
 
 ### 1. Fluxo completo do usuario
 
-  PASS  cadastro cria o usuario (id 169)
+  PASS  cadastro cria o usuario (id 190)
   PASS  cadastro devolve 303 (redireciona) (HTTP 303)
   PASS  usuario novo fica pendente (status: pendente)
   PASS  usuario pendente nao entra no painel (HTTP 302)
@@ -37,7 +37,7 @@ php tools/revisao-final.php
   PASS  pagina do admin: /admin (HTTP 200)
   PASS  pagina do admin: /admin/cron (HTTP 200)
   PASS  pagina do admin: /admin/usuarios (HTTP 200)
-  PASS  pagina do admin: /admin/usuarios/169 (HTTP 200)
+  PASS  pagina do admin: /admin/usuarios/190 (HTTP 200)
   PASS  pagina do admin: /admin/chaves (HTTP 200)
   PASS  pagina do admin: /admin/distribuicao (HTTP 200)
   PASS  pagina do admin: /admin/solicitacoes (HTTP 200)
@@ -119,7 +119,7 @@ php tools/revisao-final.php
 
 ### 7. Greps de verificacao do Bloco C
 
-  PASS  detector: nenhum ternario (--- arquivos: 220 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
+  PASS  detector: nenhum ternario (--- arquivos: 227 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
   PASS  detector: nenhum ??
   PASS  detector: nenhuma sintaxe alternativa
   PASS  detector: nenhum eco curto
@@ -134,6 +134,6 @@ php tools/revisao-final.php
   PASS  chave de API do cron-job.org intacta (sem chave (igual antes do teste))
 
 ====================================================
-RESUMO: 96 ok | 0 falha(s) | 0 aviso(s) | 220 arquivos php em app/
+RESUMO: 96 ok | 0 falha(s) | 0 aviso(s) | 227 arquivos php em app/
 ====================================================
 ```

@@ -1,4 +1,18 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 /**
  * Teste do CRON 2 do Divulga Vagas (candidatura + duplo envio), com o bot
@@ -163,6 +177,12 @@ $curriculo = $pastaCurriculos . '/teste-cron2.pdf';
 file_put_contents($curriculo, '%PDF-1.4 teste');
 
 // O caminho guardado na configuracao e relativo a pasta de uploads.
+//
+// O curriculo REAL do usuario e guardado antes: o teste devolve tudo
+// como estava no final (o curriculo de verdade nunca e perdido).
+$configuracaoAntes = $configuracoes->obterPorUsuario($usuarioId);
+$curriculoReal = (string) ($configuracaoAntes['curriculo_pdf'] ?? '');
+
 $configuracoes->db->table('configuracoes')->where('usuario_id', $usuarioId)->update([
     'curriculo_pdf' => $usuarioId . '/teste-cron2.pdf',
 ]);
@@ -430,11 +450,16 @@ $configuracoes->db->table('configuracoes')->where('usuario_id', $usuarioId)->upd
     'limite_envios_dia'                       => 20,
     'divulgavagas_candidaturas_bot_hoje'      => 0,
     'divulgavagas_data_reset_bot'             => null,
-    'curriculo_pdf'                           => null,
+    // O curriculo de verdade volta (o teste nao pode perder o PDF do
+    // usuario: ele e o que permite o bot se candidatar).
+    'curriculo_pdf'                           => $curriculoReal === '' ? null : $curriculoReal,
     'envios_hoje'                             => 0,
     'data_reset_contador'                     => null,
     'data_ultimo_envio'                       => null,
 ]);
+
+// O arquivo de teste do curriculo e apagado (o do usuario nao).
+@unlink($curriculo);
 
 echo PHP_EOL . '====================================================' . PHP_EOL;
 echo 'VERIFICACOES: ' . $verificacoes . ' | FALHAS: ' . $falhas . PHP_EOL;

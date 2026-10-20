@@ -1,8 +1,23 @@
 <?php
+/*
+
+Projeto open source do GitHub: https://github.com/brunoalex55/busca-vagas
+
+Autor: Bruno Alexandre
+
+Pix (doacao): bruno@brunoalexandre.com
+
+Este projeto e open source. Doe se quiser manter o projeto vivo.
+
+Mais informacoes no README.
+
+*/
+
 
 namespace App\Controllers\Admin;
 
 use App\Libraries\ResolvedorPlano;
+use App\Models\SolicitacaoPlanoModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
@@ -240,6 +255,104 @@ class AdminPlanos extends AdminBase
             'plano' => $plano,
             'usuarios' => $this->listarUsuariosDoPlano((int) $plano['id']),
         ]));
+    }
+
+    /**
+     * Os pedidos de plano enviados pelos usuarios do painel.
+     *
+     * E a fila do administrador: o usuario escolheu um plano la e
+     * espera a confirmacao. O filtro de status vem da URL (GET).
+     */
+    public function solicitacoes(): string
+    {
+        // O filtro de status (padrao: pendente).
+        $status = trim((string) $this->request->getGet('status'));
+
+        if (! in_array($status, ['pendente', 'aprovada', 'recusada', 'todas'], true)) {
+            $status = 'pendente';
+        }
+
+        $model = model(SolicitacaoPlanoModel::class);
+
+        // Os pedidos do filtro.
+        $pedidos = $model->listarPorStatus($status, 100);
+
+        // Quantos tem em cada situacao (as abas).
+        $contagens = [
+            'pendente' => $model->contarPendentes(),
+            'aprovada' => $model->contarPorStatus('aprovada'),
+            'recusada' => $model->contarPorStatus('recusada'),
+            'todas' => $model->contarPorStatus('todas'),
+        ];
+
+        return view('admin/planos/solicitacoes', $this->dadosAdmin('Pedidos de plano', [
+            'pedidos' => $pedidos,
+            'contagens' => $contagens,
+            'status' => $status,
+        ]));
+    }
+
+    /**
+     * Aprova o pedido de plano: o plano passa a valer na conta.
+     *
+     * @param int|string $id O id do pedido.
+     */
+    public function aprovarSolicitacao($id): RedirectResponse
+    {
+        $pedido = model(SolicitacaoPlanoModel::class)->buscar($this->idDaRota($id));
+
+        if ($pedido === null) {
+            return $this->voltarParaPedidos('Pedido nao encontrado.', false);
+        }
+
+        if ((string) valor_ou($pedido, 'status', '') !== 'pendente') {
+            return $this->voltarParaPedidos('Este pedido ja foi respondido.', false);
+        }
+
+        // Aplica o plano na conta do usuario.
+        $aprovado = model(SolicitacaoPlanoModel::class)->aprovar(
+            (int) valor_ou($pedido, 'id', 0),
+            (int) $this->adminId
+        );
+
+        if (! $aprovado) {
+            return $this->voltarParaPedidos('Nao foi possivel aprovar o pedido.', false);
+        }
+
+        return $this->voltarParaPedidos('Pedido aprovado. O plano ja vale na conta do usuario.');
+    }
+
+    /**
+     * Recusa o pedido de plano (com a justificativa que o usuario ve).
+     *
+     * @param int|string $id O id do pedido.
+     */
+    public function recusarSolicitacao($id): RedirectResponse
+    {
+        $pedido = model(SolicitacaoPlanoModel::class)->buscar($this->idDaRota($id));
+
+        if ($pedido === null) {
+            return $this->voltarParaPedidos('Pedido nao encontrado.', false);
+        }
+
+        if ((string) valor_ou($pedido, 'status', '') !== 'pendente') {
+            return $this->voltarParaPedidos('Este pedido ja foi respondido.', false);
+        }
+
+        // A justificativa do administrador.
+        $resposta = trim((string) $this->request->getPost('resposta'));
+
+        if (mb_strlen($resposta) > 1000) {
+            $resposta = mb_substr($resposta, 0, 1000);
+        }
+
+        model(SolicitacaoPlanoModel::class)->recusar(
+            (int) valor_ou($pedido, 'id', 0),
+            (int) $this->adminId,
+            $resposta
+        );
+
+        return $this->voltarParaPedidos('Pedido recusado. O usuario pode pedir outro plano.');
     }
 
     // =====================================================================
@@ -585,6 +698,22 @@ class AdminPlanos extends AdminBase
 
         return redirect()
             ->to(site_url('admin/planos'))
+            ->with('sucesso', $mensagem);
+    }
+
+    /**
+     * Volta para a fila de pedidos de plano com uma mensagem.
+     */
+    private function voltarParaPedidos(string $mensagem, bool $sucesso = true): RedirectResponse
+    {
+        if (! $sucesso) {
+            return redirect()
+                ->to(site_url('admin/planos/solicitacoes'))
+                ->with('erro', $mensagem);
+        }
+
+        return redirect()
+            ->to(site_url('admin/planos/solicitacoes'))
             ->with('sucesso', $mensagem);
     }
 }

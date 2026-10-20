@@ -3,7 +3,7 @@
 > Verificacao feita em **20/10/2026**, item por item, contra o codigo-fonte,
 > as rotas, as views e o banco de dados em execucao.
 >
-> **Resultado: 197 de 206 itens verificados.**
+> **Resultado: 210 de 219 itens verificados.**
 > Os 9 itens pendentes estao listados no fim do documento,
 > com o motivo e o que falta para cada um.
 
@@ -36,7 +36,7 @@
 | Banco de Dados | 8 | 8 | 0 |
 | Qualidade do Codigo (Bloco C) | 5 | 5 | 0 |
 | Documentacao | 6 | 6 | 0 |
-| **Total** | **206** | **197** | **9** |
+| **Total** | **219** | **210** | **9** |
 
 ## Stack e Arquitetura
 
@@ -253,7 +253,7 @@
 
 ## Banco de Dados
 
-- [x] Todas as migrations executadas (33 de 33 migrations aplicadas; a fase 6 esta travada (as tabelas mensagens_contato e emails_sistema nao existem))
+- [x] Todas as migrations executadas (34 de 34 migrations aplicadas; a fase 6 esta travada (as tabelas mensagens_contato e emails_sistema nao existem))
 - [x] UNIQUE(job_id, usuario_id) na tabela vagas (indice uq_vagas_usuario_job (usuario_id, job_id))
 - [x] UNIQUE(hash_unico, usuario_id) na tabela vagas (indice uq_vagas_usuario_hash (usuario_id, hash_unico))
 - [x] Colunas de envio em configuracoes (as 8 colunas de janela, intervalo e limite existem)
@@ -264,7 +264,7 @@
 
 ## Qualidade do Codigo (Bloco C)
 
-- [x] Nenhum ternario (detector por tokenizador: --- arquivos: 220 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
+- [x] Nenhum ternario (detector por tokenizador: --- arquivos: 227 | ternarios: 0 | ??: 0 | alternativa: 0 | eco curto: 0)
 - [x] Nenhum atalho de echo (nenhuma tag <?= em todo o app/)
 - [x] Nenhum endforeach/endif/endfor/endwhile/endswitch (nenhuma sintaxe alternativa em todo o app/)
 - [x] Comentarios linha a linha em PT-BR (todos os arquivos de app/ tem comentarios em PT-BR)
@@ -272,7 +272,7 @@
 
 ## Documentacao
 
-- [x] README.md completo (README com as 35 secoes (as do segundo provedor e dos planos vieram depois))
+- [x] README.md completo (README com a dor real, o que o projeto resolve, as imagens do ambiente e o apoio)
 - [x] docs/agendamento-linux.md (docs/agendamento-linux.md)
 - [x] docs/agendamento-windows.md (docs/agendamento-windows.md)
 - [x] docs/agendamento-manual.md (docs/agendamento-manual.md)
