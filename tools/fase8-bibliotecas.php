@@ -49,7 +49,40 @@ function checar(string $rotulo, bool $ok, string $detalhe = ''): void
     echo '  FALHA ' . $rotulo . ($detalhe === '' ? '' : ' (' . $detalhe . ')') . PHP_EOL;
 }
 
-$usuarioId = 8;
+// O teste usa um usuario DE TESTE (a conta real tem o intervalo do bot
+// marcado pela ultima candidatura de verdade).
+$usuarioTeste = 'fase8-bibliotecas@busca-vagas.teste';
+
+$linhaUsuario = db_connect()->table('usuarios')->where('email', $usuarioTeste)->get()->getRowArray();
+
+if ($linhaUsuario === null) {
+    db_connect()->table('usuarios')->insert([
+        'nome'     => 'Usuario de Teste (bibliotecas)',
+        'email'    => $usuarioTeste,
+        'senha'    => password_hash('teste-123', PASSWORD_BCRYPT),
+        'perfil'   => 'usuario',
+        'status'   => 'ativo',
+        'ativo'    => 1,
+    ]);
+
+    $linhaUsuario = db_connect()->table('usuarios')->where('email', $usuarioTeste)->get()->getRowArray();
+}
+
+$usuarioId = (int) $linhaUsuario['id'];
+// A configuracao do usuario de teste existe (os testes mudam campos
+// dela) e comeca com os contadores zerados.
+$configuracoesTeste = model('ConfiguracaoModel');
+$configuracoesTeste->salvarPorUsuario($usuarioId, []);
+
+db_connect()->table('configuracoes')->where('usuario_id', $usuarioId)->update([
+    'envios_hoje'                        => 0,
+    'data_reset_contador'                => null,
+    'data_ultimo_envio'                  => null,
+    'divulgavagas_candidaturas_bot_hoje' => 0,
+    'divulgavagas_data_reset_bot'        => null,
+]);
+
+
 $hoje = date('Y-m-d');
 
 echo PHP_EOL . '-- 1. VerificadorLimiteEnvio (equivalencia com a regra antiga) --' . PHP_EOL;
