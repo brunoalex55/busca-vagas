@@ -1098,3 +1098,11 @@
         font-size: var(--texto-xs);
     }
 }
+
+/* O texto do cabecalho do painel (titulo + descricao ao lado das acoes). */
+.painel__cabecalho-texto {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-1);
+    min-width: 0;
+}

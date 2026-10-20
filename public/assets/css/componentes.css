@@ -791,3 +791,17 @@
     display: inline-block;
     vertical-align: middle;
 }
+
+/* A grade dos campos de um formulario (duas colunas quando ha espaco). */
+.formulario__grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--espaco-4);
+}
+
+/* A descricao de um cartao. */
+.cartao__descricao {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+    line-height: 1.6;
+}

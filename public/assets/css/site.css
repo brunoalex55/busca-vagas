@@ -1562,3 +1562,24 @@ a.canal:hover {
     color: var(--cor-texto-suave);
     text-align: center;
 }
+
+/* O conteudo do topo do site. */
+.hero__conteudo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+    max-width: 42rem;
+}
+
+/* O numero que conta sozinho (o contador da home). */
+.contador {
+    color: var(--cor-primaria);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A grade de cartoes detalhada (a pagina de recursos). */
+.grade-cartoes--detalhada {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--espaco-5);
+}
