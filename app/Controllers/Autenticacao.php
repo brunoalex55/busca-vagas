@@ -127,6 +127,9 @@ class Autenticacao extends BaseController
             return $this->redirecionarPorPerfil();
         }
 
+        // O plano escolhido pelo usuario (vem de /precos).
+        $planoEscolhido = $this->planoPelaQuery();
+
         return view('autenticacao/registro', $this->dadosComuns + [
             'seo' => [
                 'titulo'         => 'Criar conta gratis | BuscaVagas PRO',
@@ -134,9 +137,57 @@ class Autenticacao extends BaseController
                 'palavras_chave' => 'criar conta, cadastro gratis, busca de emprego',
                 'tipo'           => 'website',
             ],
+            'planoEscolhido' => $planoEscolhido,
+            'planos'         => $this->planosPublicos(),
         ]);
     }
 
+    /**
+     * O plano escolhido pelo usuario (vem da query ou do formulario).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function planoPelaQuery(): ?array
+    {
+        // O slug do plano (da query ou do campo do formulario).
+        $slug = trim((string) $this->request->getGet('plano'));
+
+        if ($slug === '') {
+            $slug = trim((string) $this->request->getPost('plano'));
+        }
+
+        if ($slug === '') {
+            return null;
+        }
+
+        // O plano tem que existir e estar ativo.
+        $plano = db_connect()->table('planos')
+            ->where('slug', $slug)
+            ->where('ativo', 1)
+            ->get()
+            ->getRowArray();
+
+        if ($plano === null || $plano === []) {
+            return null;
+        }
+
+        return $plano;
+    }
+
+    /**
+     * Os planos que o usuario pode escolher no cadastro.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function planosPublicos(): array
+    {
+        return db_connect()->table('planos')
+            ->select('id, slug, nome, descricao, max_palavras_chave, max_cidades_por_termo, limite_envios_dia, envio_automatico, envio_em_massa, max_usuarios, ordem')
+            ->where('ativo', 1)
+            ->orderBy('ordem', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
     /**
      * Processa o cadastro (SOMENTE POST).
      */
@@ -186,6 +237,16 @@ class Autenticacao extends BaseController
         /** @var UsuarioModel $modelo */
         $modelo = model(UsuarioModel::class);
 
+        // O plano escolhido (o admin ve o pedido como "Pendente (Plano x)").
+        $plano = $this->planoPelaQuery();
+
+        // O plano escolhido (null quando o usuario nao escolheu nenhum).
+        $planoId = null;
+
+        if ($plano !== null) {
+            $planoId = (int) $plano['id'];
+        }
+
         // Grava o usuario ja com a senha em hash bcrypt.
         $id = $modelo->insert([
             'nome'                => $nome,
@@ -197,6 +258,7 @@ class Autenticacao extends BaseController
             'mes_referencia'      => date('Y-m'),
             'envio_automatico'    => 0,
             'ativo'               => 1,
+            'plano_id'            => $planoId,
         ]);
 
         // Se o insert falhar por qualquer motivo, volta com erro.

@@ -251,14 +251,16 @@ class UsuarioModel extends Model
     public function listarAdmin(array $filtros, int $limite, int $offset): array
     {
         // Builder com as colunas usadas na listagem.
-        $builder = $this->db->table($this->table)
+        $builder = $this->db->table($this->table . ' u')
             ->select(
-                'id, nome, email, perfil, status, ativo, consultas_usadas_mes, '
-                . 'mes_referencia, limite_manual, envio_automatico, '
-                . 'emails_automaticos_enviados, ultima_execucao_busca_vagas, '
-                . 'ultima_execucao_envio_automatico, criado_em'
+                'u.id, u.nome, u.email, u.perfil, u.status, u.ativo, u.consultas_usadas_mes, '
+                . 'u.mes_referencia, u.limite_manual, u.envio_automatico, '
+                . 'u.emails_automaticos_enviados, u.ultima_execucao_busca_vagas, '
+                . 'u.ultima_execucao_envio_automatico, u.criado_em, '
+                . 'u.plano_id, p.nome AS plano_nome'
             )
-            ->orderBy('id', 'DESC');
+            ->join('planos p', 'p.id = u.plano_id', 'left')
+            ->orderBy('u.id', 'DESC');
 
         // Aplica os filtros recebidos.
         $this->aplicarFiltrosAdmin($builder, $filtros);
@@ -302,19 +304,19 @@ class UsuarioModel extends Model
         $status = texto_ou($filtros, 'status');
 
         if (in_array($status, ['pendente', 'ativo', 'bloqueado'], true)) {
-            $builder->where('status', $status);
+            $builder->where('u.status', $status);
         }
 
         // Perfil de acesso.
         $perfil = texto_ou($filtros, 'perfil');
 
         if (in_array($perfil, ['admin', 'usuario'], true)) {
-            $builder->where('perfil', $perfil);
+            $builder->where('u.perfil', $perfil);
         }
 
         // Apenas quem tem o envio automatico ligado.
         if (valor_ou($filtros, 'envio', '') === '1') {
-            $builder->where('envio_automatico', 1);
+            $builder->where('u.envio_automatico', 1);
         }
     }
 

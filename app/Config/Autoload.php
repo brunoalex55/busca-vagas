@@ -94,6 +94,8 @@ class Autoload extends AutoloadConfig
         'site',
         // Helper de leitura segura de arrays (substitui o operador ??).
         'dados',
+        // Helper com a checagem de dono das vagas (isolamento por usuario).
+        'vaga_segura',
         // Helper com os selos da candidatura pelo site do Divulga Vagas.
         'divulgavagas',
         // Helpers nativos usados em praticamente todas as views.

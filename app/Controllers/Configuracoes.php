@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\Criptografia;
 use App\Libraries\JanelaEnvio;
+use App\Libraries\ResolvedorPlano;
 use App\Models\EmailEnviadoModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\DownloadResponse;
@@ -383,6 +384,19 @@ class Configuracoes extends PainelBase
         // O formulario avisa se o interruptor de envio automatico foi exibido.
         $campoAutomatico = $this->request->getPost('envio_automatico_enviado') === '1';
         $ligar           = $campoAutomatico && $this->request->getPost('envio_automatico') === '1';
+
+        // O plano do usuario permite o envio automatico? (a tela esconde
+        // o interruptor, mas quem decide e o servidor).
+        $permitidoAutomatico = (new ResolvedorPlano())->podeUsarEnvioAutomatico($this->usuarioId);
+
+        if ($ligar && $permitidoAutomatico === false) {
+            $plano = (new ResolvedorPlano())->obterPlanoDoUsuario($this->usuarioId);
+
+            return redirect()
+                ->to(site_url('painel/configuracoes'))
+                ->with('erro', 'O envio automatico esta disponivel nos planos Profissional e Empresa. Seu plano e '
+                    . (string) $plano['nome'] . '.');
+        }
 
         // Validacoes.
         $erros = [];

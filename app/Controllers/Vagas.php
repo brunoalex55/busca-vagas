@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\VagaModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
@@ -88,13 +87,9 @@ class Vagas extends PainelBase
      */
     public function detalhe($id): string
     {
-        // Busca escopada pelo dono.
-        $vaga = $this->vagas->buscarDoUsuario((int) $id, $this->usuarioId);
-
-        // Vaga inexistente ou de outro usuario.
-        if ($vaga === null) {
-            throw PageNotFoundException::forPageNotFound('Vaga nao encontrada.');
-        }
+        // A vaga, mas somente se ela for do usuario da sessao (o helper
+        // tambem registra a tentativa de acesso a vaga de outra pessoa).
+        $vaga = obterVagaDoUsuarioOu404((int) $id, $this->usuarioId);
 
         // Decodifica a lista de e-mails encontrados.
         $emails = json_decode(valor_ou($vaga, 'emails_encontrados', '[]'), true);
@@ -120,12 +115,8 @@ class Vagas extends PainelBase
      */
     public function marcarCandidatado($id): RedirectResponse
     {
-        // Busca escopada pelo dono.
-        $vaga = $this->vagas->buscarDoUsuario((int) $id, $this->usuarioId);
-
-        if ($vaga === null) {
-            throw PageNotFoundException::forPageNotFound('Vaga nao encontrada.');
-        }
+        // A vaga, mas somente se ela for do usuario da sessao.
+        obterVagaDoUsuarioOu404((int) $id, $this->usuarioId);
 
         // Marca a vaga do proprio usuario.
         $this->vagas->marcarCandidatado((int) $id, $this->usuarioId);

@@ -34,6 +34,7 @@ $menuAdmin = [
     ['rota' => 'admin/chaves',          'rotulo' => 'Chaves',         'icone' => 'raio'],
     ['rota' => 'admin/distribuicao',    'rotulo' => 'Distribuicao',   'icone' => 'relogio'],
     ['rota' => 'admin/cron',            'rotulo' => 'Agendamento',    'icone' => 'raio'],
+    ['rota' => 'admin/planos',           'rotulo' => 'Planos',        'icone' => 'site'],
     ['rota' => 'admin/divulgavagas',    'rotulo' => 'Divulga Vagas',  'icone' => 'site'],
     ['rota' => 'admin/solicitacoes',    'rotulo' => 'Solicitacoes',   'icone' => 'documento'],
     ['rota' => 'admin/logs',            'rotulo' => 'Logs',           'icone' => 'lupa'],

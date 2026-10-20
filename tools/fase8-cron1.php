@@ -53,7 +53,28 @@ class BotDeBusca extends App\Libraries\ProvedorDivulgaVagas
     }
 }
 
-$usuarioId = 8;
+// O teste usa um usuario DE TESTE (sem vagas reais): as contagens do
+// resumo da busca somam todas as vagas do usuario, e as vagas reais
+// dele atrapalhariam a verificacao.
+$usuarioTeste = 'e2e@busca-vagas.teste';
+
+$linhaUsuario = db_connect()->table('usuarios')->where('email', $usuarioTeste)->get()->getRowArray();
+
+if ($linhaUsuario === null) {
+    db_connect()->table('usuarios')->insert([
+        'nome'     => 'Usuario de Teste',
+        'email'    => $usuarioTeste,
+        'senha'    => password_hash('teste-123', PASSWORD_BCRYPT),
+        'perfil'   => 'usuario',
+        'status'   => 'ativo',
+        'ativo'    => 1,
+    ]);
+
+    $linhaUsuario = db_connect()->table('usuarios')->where('email', $usuarioTeste)->get()->getRowArray();
+}
+
+$usuarioId = (int) $linhaUsuario['id'];
+
 $vagas = model('VagaModel');
 $palavras = model('PalavraChaveModel');
 $logs = model('LogConsultaModel');
@@ -61,7 +82,7 @@ $logs = model('LogConsultaModel');
 echo PHP_EOL . '-- Preparo --' . PHP_EOL;
 
 // Limpa os dados de teste.
-$vagas->db->table('vagas')->where('job_id', 'dv-teste-busca')->delete();
+$vagas->db->table('vagas')->where('usuario_id', $usuarioId)->delete();
 $logs->db->table('logs_consulta')->where('termo', 'Vaga Teste Busca')->delete();
 
 // Uma palavra-chave de teste, devida agora.
@@ -129,6 +150,14 @@ $semEmail = $vagas->db->table('vagas')->where('job_id', 'dv-34765224')->get()->g
 checar('a vaga sem e-mail ficou sem contato', (string) ($semEmail['email_contato'] ?? '') === '');
 
 // A deduplicacao: rodar de novo nao duplica.
+//
+// Cada provedor tem o proprio horario de consulta: a primeira busca
+// deixou a palavra agendada para o dia seguinte. O teste zera esse
+// horario para simular "a palavra esta devida de novo".
+$palavras->db->table('palavras_chave')
+    ->where('usuario_id', $usuarioId)
+    ->update(['proxima_execucao_divulgavagas' => null]);
+
 $resumo2 = $buscador->buscarDoUsuario($usuarioId, 'cron');
 checar('a segunda busca nao duplica', $resumo2['vagas_inseridas'] === 0 && $resumo2['vagas_repetidas'] === 2, 'novas: ' . $resumo2['vagas_inseridas'] . ', repetidas: ' . $resumo2['vagas_repetidas']);
 
@@ -169,6 +198,13 @@ if ($auditoria !== null) {
 }
 
 // Falha do bot: o log registra o erro.
+//
+// A palavra e liberada de novo (o horario do provedor) para que a
+// busca de fato rode e o erro do bot apareca.
+$palavras->db->table('palavras_chave')
+    ->where('usuario_id', $usuarioId)
+    ->update(['proxima_execucao_divulgavagas' => null]);
+
 $botFalha = new BotDeBusca();
 $botFalha->deveFalhar = true;
 
@@ -180,12 +216,14 @@ checar('falha do bot vira erro no log', $logs->db->table('logs_consulta')->where
 
 echo PHP_EOL . '-- Limpeza --' . PHP_EOL;
 
-$vagas->db->table('vagas')->where('job_id', 'dv-34762271')->delete();
-$vagas->db->table('vagas')->where('job_id', 'dv-34765224')->delete();
+$vagas->db->table('vagas')->where('usuario_id', $usuarioId)->delete();
 $logs->db->table('logs_consulta')->where('termo', 'Vaga Teste Busca')->delete();
 $palavras->db->table('palavras_chave')->where('usuario_id', $usuarioId)->where('termo', 'Vaga Teste Busca')->delete();
 model('ExecucaoDivulgaVagasModel')->db->table('execucoes_divulgavagas')->where('usuario_id', $usuarioId)->where('tipo', 'buscar')->delete();
 model('ExecucaoDivulgaVagasModel')->db->table('execucoes_divulgavagas')->where('usuario_id', $usuarioId)->where('tipo', 'candidatar')->delete();
+
+// O usuario de teste some junto (o teste nao deixa rastro).
+db_connect()->table('usuarios')->where('id', $usuarioId)->delete();
 
 echo PHP_EOL . '====================================================' . PHP_EOL;
 echo 'VERIFICACOES: ' . $verificacoes . ' | FALHAS: ' . $falhas . PHP_EOL;

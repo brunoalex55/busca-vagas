@@ -99,6 +99,50 @@ if ($site === null) {
                     </div>
                 </div>
 
+            <?php /* O plano escolhido (vem de /precos) e a escolha do plano. */ ?>
+            <div class="cartao-autenticacao__plano">
+                <h3 class="cartao__titulo">Escolha seu plano</h3>
+
+                <?php if ($planoEscolhido !== null){ ?>
+                    <p class="texto-suave texto-pequeno">
+                        Plano escolhido: <strong><?php echo esc($planoEscolhido['nome']) ; ?></strong>.
+                        O administrador confirma o pagamento e libera o acesso.
+                    </p>
+                <?php } else { ?>
+                    <p class="texto-suave texto-pequeno">
+                        Escolha o plano que voce quer. Voce pode mudar depois com o
+                        administrador.
+                    </p>
+                <?php } ?>
+
+                <?php foreach ($planos as $plano){ ?>
+                    <?php
+                    // O plano marcado no formulario.
+                    $marcado = false;
+
+                    if ($planoEscolhido !== null && (int) $plano['id'] === (int) $planoEscolhido['id']) {
+                        $marcado = true;
+                    }
+                    ?>
+                    <label class="cartao-plano">
+                        <input type="radio" name="plano" value="<?php echo esc($plano['slug']) ; ?>"
+                               <?php echo  escolher($marcado, 'checked', '') ; ?>>
+                        <span class="cartao-plano__corpo">
+                            <strong><?php echo esc($plano['nome']) ; ?></strong>
+                            <span class="item-lista__meta">
+                                <?php if (valor_ou($plano, 'max_palavras_chave', null) === null){ ?>
+                                    Palavras-chave ilimitadas
+                                <?php } else { ?>
+                                    <?php echo esc((int) $plano['max_palavras_chave']) ; ?> palavra-chave(s)
+                                <?php } ?>
+                                | <?php echo esc((int) $plano['limite_envios_dia']) ; ?> envios/dia
+                                | <?php echo esc((int) $plano['max_usuarios']) ; ?> usuario(s)
+                            </span>
+                        </span>
+                    </label>
+                <?php } ?>
+            </div>
+
                 <button class="botao botao--primario botao--bloco botao--grande" type="submit">
                     Criar minha conta
                     <?php echo  icone_svg('seta') ; ?>

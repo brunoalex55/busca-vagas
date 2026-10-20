@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Libraries\DistribuicaoConsultas;
+use App\Libraries\ResolvedorPlano;
 use App\Libraries\GerenciadorCron;
 use App\Models\ConfiguracaoModel;
 use App\Models\EmailEnviadoModel;
@@ -126,6 +127,16 @@ class AdminUsuarios extends AdminBase
         // Execucoes manuais do usuario (limite global definido pelo admin).
         $execucoesManuais = $this->gerenciador->usuarioPodeExecutarManualmente($usuarioId);
 
+        // O plano do usuario e os limites que valem para ele (com a
+        // origem de cada valor: manual, plano ou padrao).
+        $resolvedor = new ResolvedorPlano();
+        $plano = $resolvedor->obterPlanoDoUsuario($usuarioId);
+
+        $limites = [];
+
+        foreach (['max_palavras_chave', 'max_cidades_por_termo', 'limite_envios_dia'] as $campo) {
+            $limites[$campo] = $resolvedor->resolverLimiteComOrigem($campo, $usuarioId);
+        }
         return view('admin/usuarios/detalhe', $this->dadosAdmin('Usuario: ' . $usuario['nome'], [
             'usuario'       => $usuario,
             'configuracao'  => $configuracao,
@@ -139,6 +150,9 @@ class AdminUsuarios extends AdminBase
             'enviosRecentes' => $emails->recentesDoUsuario($usuarioId, 10),
             'execucoesManuais' => $execucoesManuais,
             'limiteGlobalManuais' => $this->gerenciador->obterLimiteExecucoesManuaisUsuario(),
+            'plano'         => $plano,
+            'planosAtivos'  => $this->planosAtivos(),
+            'limites'       => $limites,
         ]));
     }
 
@@ -431,6 +445,141 @@ class AdminUsuarios extends AdminBase
         return null;
     }
 
+    /**
+     * Atribui um plano a um usuario. SOMENTE POST.
+     *
+     * @param int|string $id Identificador do usuario.
+     */
+    public function atribuirPlano($id): RedirectResponse
+    {
+        $usuarioId = $this->idDaRota($id);
+        $usuario = $this->usuarios->find($usuarioId);
+
+        if ($usuario === null) {
+            return $this->voltarParaUsuarioAlvo($usuarioId, 'Usuario nao encontrado.', true);
+        }
+
+        // O plano escolhido.
+        $planoId = (int) $this->request->getPost('plano_id');
+        $plano = db_connect()->table('planos')->where('id', $planoId)->get()->getRowArray();
+
+        if ($plano === null || $plano === []) {
+            return $this->voltarParaUsuario($usuarioId, 'Plano nao encontrado.', true);
+        }
+
+        // Quantos usuarios o plano aceita.
+        $maxUsuarios = (int) $plano['max_usuarios'];
+        $usuariosNoPlano = (int) db_connect()->table('usuarios')
+            ->where('plano_id', $planoId)
+            ->where('id !=', $usuarioId)
+            ->countAllResults();
+
+        // O plano esta cheio: nao da para entrar mais gente.
+        if ($maxUsuarios > 0 && $usuariosNoPlano >= $maxUsuarios) {
+            return $this->voltarParaUsuario(
+                $usuarioId,
+                'O plano ' . (string) $plano['nome'] . ' aceita ' . $maxUsuarios
+                . ' usuario(s) e ja esta com ' . $usuariosNoPlano . '.',
+                true
+            );
+        }
+
+        // Grava o plano.
+        db_connect()->table('usuarios')->where('id', $usuarioId)->update([
+            'plano_id' => $planoId,
+            'plano_inicio_em' => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->voltarParaUsuario(
+            $usuarioId,
+            'Plano ' . (string) $plano['nome'] . ' atribuido a ' . (string) $usuario['nome'] . '.'
+        );
+    }
+
+    /**
+     * Devolve o usuario para o plano basico. SOMENTE POST.
+     *
+     * @param int|string $id Identificador do usuario.
+     */
+    public function removerPlano($id): RedirectResponse
+    {
+        $usuarioId = $this->idDaRota($id);
+        $usuario = $this->usuarios->find($usuarioId);
+
+        if ($usuario === null) {
+            return $this->voltarParaUsuarioAlvo($usuarioId, 'Usuario nao encontrado.', true);
+        }
+
+        // O plano basico (o fallback).
+        $basico = db_connect()->table('planos')->where('slug', 'basico')->get()->getRowArray();
+
+        if ($basico === null || $basico === []) {
+            return $this->voltarParaUsuario($usuarioId, 'O plano basico nao esta cadastrado.', true);
+        }
+
+        db_connect()->table('usuarios')->where('id', $usuarioId)->update([
+            'plano_id' => (int) $basico['id'],
+            'plano_inicio_em' => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->voltarParaUsuario($usuarioId, 'O usuario voltou para o plano basico.');
+    }
+
+    /**
+     * Grava (ou limpa) o limite manual do usuario. SOMENTE POST.
+     *
+     * @param int|string $id Identificador do usuario.
+     */
+    public function salvarLimiteManual($id): RedirectResponse
+    {
+        $usuarioId = $this->idDaRota($id);
+        $usuario = $this->usuarios->find($usuarioId);
+
+        if ($usuario === null) {
+            return $this->voltarParaUsuarioAlvo($usuarioId, 'Usuario nao encontrado.', true);
+        }
+
+        // O valor mandado (vazio = limpa o limite manual).
+        $valor = trim((string) $this->request->getPost('limite_manual'));
+
+        if ($valor === '') {
+            $this->usuarios->definirLimiteManual($usuarioId, null);
+
+            return $this->voltarParaUsuario(
+                $usuarioId,
+                'Limite manual removido: o plano volta a valer.'
+            );
+        }
+
+        $limite = (int) $valor;
+
+        if ($limite < 0) {
+            return $this->voltarParaUsuario($usuarioId, 'O limite manual nao pode ser negativo.', true);
+        }
+
+        $this->usuarios->definirLimiteManual($usuarioId, $limite);
+
+        return $this->voltarParaUsuario(
+            $usuarioId,
+            'Limite manual salvo: ' . $limite . '. Ele sobrescreve o plano.'
+        );
+    }
+
+    /**
+     * Os planos que o admin pode atribuir (os ativos).
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function planosAtivos(): array
+    {
+        return db_connect()->table('planos')
+            ->select('id, slug, nome, max_usuarios, limite_envios_dia')
+            ->where('ativo', 1)
+            ->orderBy('ordem', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getResultArray();
+    }
     /**
      * Redireciona para a ficha do usuario com uma mensagem de flash.
      */

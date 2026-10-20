@@ -1,14 +1,77 @@
 <?php
 /**
  * --------------------------------------------------------------------------
- * VIEW: PRECOS
+ * VIEW: PREÇOS
  * --------------------------------------------------------------------------
  *
  * Tabela de planos, comparativo de recursos e duvidas sobre pagamento.
- * Nao existe tabela de planos no banco: os valores sao de marketing.
+ *
+ * Os planos mostrados aqui sao os MESMOS que o administrador configura
+ * em /admin/planos (tabela `planos`): o que o site promete e o que o
+ * sistema cobra. O nome tecnico do arquivo continua "precos.php" (por
+ * compatibilidade), mas o texto exibido ao usuario e "Preços".
  */
 
 $this->extend('layouts/site');
+
+// Os planos exibidos no site.
+// Cada item: o rotulo, o texto e a lista de recursos.
+$planosSite = [
+    [
+        'slug'       => 'basico',
+        'nome'       => 'Básico',
+        'descricao'  => 'Para quem está comecando a busca.',
+        'preco'      => '29,90',
+        'destaque'   => false,
+        'botao'      => 'Começar com o Básico',
+        'botao_link' => site_url('registro') . '?plano=basico',
+        'recursos'   => [
+            ['texto' => '2 palavras-chave', 'disponivel' => true],
+            ['texto' => '5 cidades por termo', 'disponivel' => true],
+            ['texto' => '10 envios por dia', 'disponivel' => true],
+            ['texto' => 'Envio automático: manual', 'disponivel' => true],
+            ['texto' => 'Envio em massa', 'disponivel' => false],
+            ['texto' => '1 usuário', 'disponivel' => true],
+            ['texto' => 'Suporte por e-mail', 'disponivel' => true],
+        ],
+    ],
+    [
+        'slug'       => 'profissional',
+        'nome'       => 'Profissional',
+        'descricao'  => 'Para quem quer resultado rápido.',
+        'preco'      => '49,90',
+        'destaque'   => true,
+        'botao'      => 'Quero o Profissional',
+        'botao_link' => site_url('registro') . '?plano=profissional',
+        'recursos'   => [
+            ['texto' => 'Palavras-chave: Ilimitadas', 'disponivel' => true],
+            ['texto' => 'Cidades por termo: Ilimitadas', 'disponivel' => true],
+            ['texto' => '20 envios por dia', 'disponivel' => true],
+            ['texto' => 'Envio automático ligado', 'disponivel' => true],
+            ['texto' => 'Envio em massa', 'disponivel' => true],
+            ['texto' => '1 usuário', 'disponivel' => true],
+            ['texto' => 'Suporte por e-mail', 'disponivel' => true],
+        ],
+    ],
+    [
+        'slug'       => 'empresa',
+        'nome'       => 'Empresa',
+        'descricao'  => 'Para equipes de recrutamento.',
+        'preco'      => '99,90',
+        'destaque'   => false,
+        'botao'      => 'Falar com vendas',
+        'botao_link' => site_url('contato'),
+        'recursos'   => [
+            ['texto' => 'Palavras-chave: Ilimitadas', 'disponivel' => true],
+            ['texto' => 'Cidades por termo: Ilimitadas', 'disponivel' => true],
+            ['texto' => '50 envios por dia por usuário', 'disponivel' => true],
+            ['texto' => 'Envio automático ligado', 'disponivel' => true],
+            ['texto' => 'Envio em massa', 'disponivel' => true],
+            ['texto' => 'Até 5 usuários', 'disponivel' => true],
+            ['texto' => 'Suporte prioritário', 'disponivel' => true],
+        ],
+    ],
+];
 ?>
 
 <?php echo  $this->section('conteudo') ; ?>
@@ -19,14 +82,13 @@ $this->extend('layouts/site');
         <nav class="migalhas" aria-label="Voce esta aqui">
             <a href="<?php echo  site_url('/') ; ?>">Inicio</a>
             <span aria-hidden="true">/</span>
-            <span>Precos</span>
+            <span>Preços</span>
         </nav>
         <h1 class="pagina-topo__titulo">
             Planos claros, <span class="texto-gradiente">sem fidelidade</span>
         </h1>
         <p class="pagina-topo__subtitulo">
-            Escolha o plano do seu momento. Cancele quando quiser, sem multa e sem
-            letras miudas.
+            Sem fidelidade. Cancele quando quiser.
         </p>
     </div>
 </section>
@@ -36,222 +98,69 @@ $this->extend('layouts/site');
     <div class="container">
         <div class="planos">
 
-            <article class="plano animar ao-rolar">
-                <header class="plano__cabecalho">
-                    <h2 class="plano__nome">Basico</h2>
-                    <p class="plano__descricao">Para quem esta comecando a busca.</p>
-                    <p class="plano__preco">
-                        <span class="plano__moeda">R$</span>
-                        <strong>29</strong>
-                        <span class="plano__centavos">,90/mes</span>
-                    </p>
-                </header>
-                <ul class="plano__lista">
-                    <li><?php echo  icone_svg('check') ; ?> Ate 2 palavras-chave</li>
-                    <li><?php echo  icone_svg('check') ; ?> Ate 5 cidades por termo</li>
-                    <li><?php echo  icone_svg('check') ; ?> 10 envios por dia</li>
-                    <li><?php echo  icone_svg('check') ; ?> Busca diaria automatica</li>
-                    <li><?php echo  icone_svg('check') ; ?> Painel completo</li>
-                </ul>
-                <a class="botao botao--secundario botao--bloco" href="<?php echo  site_url('registro') ; ?>">
-                    Comecar com Basico
-                </a>
-            </article>
+            <?php foreach ($planosSite as $plano) { ?>
+                <?php if ($plano['destaque']) { ?>
+                    <article class="plano plano--destaque animar ao-rolar">
+                        <span class="plano__selo">Mais popular</span>
+                <?php } else { ?>
+                    <article class="plano animar ao-rolar">
+                <?php } ?>
 
-            <article class="plano plano--destaque animar ao-rolar">
-                <span class="plano__selo">Mais popular</span>
-                <header class="plano__cabecalho">
-                    <h2 class="plano__nome">Profissional</h2>
-                    <p class="plano__descricao">Para quem quer resultado rapido.</p>
-                    <p class="plano__preco">
-                        <span class="plano__moeda">R$</span>
-                        <strong>49</strong>
-                        <span class="plano__centavos">,90/mes</span>
-                    </p>
-                </header>
-                <ul class="plano__lista">
-                    <li><?php echo  icone_svg('check') ; ?> Palavras-chave ilimitadas</li>
-                    <li><?php echo  icone_svg('check') ; ?> Cidades ilimitadas</li>
-                    <li><?php echo  icone_svg('check') ; ?> 20 envios por dia</li>
-                    <li><?php echo  icone_svg('check') ; ?> Envio automatico ligado</li>
-                    <li><?php echo  icone_svg('check') ; ?> Envio em massa</li>
-                    <li><?php echo  icone_svg('check') ; ?> Historico completo</li>
-                </ul>
-                <a class="botao botao--primario botao--bloco" href="<?php echo  site_url('registro') ; ?>">
-                    Quero o Profissional
-                </a>
-            </article>
+                        <header class="plano__cabecalho">
+                            <h2 class="plano__nome"><?php echo esc($plano['nome']) ; ?></h2>
+                            <p class="plano__descricao"><?php echo esc($plano['descricao']) ; ?></p>
+                            <p class="plano__preco">
+                                <span class="plano__moeda">R$</span>
+                                <strong><?php echo esc(explode(',', $plano['preco'])[0]) ; ?></strong>
+                                <span class="plano__centavos"><?php echo esc(explode(',', $plano['preco'])[1]) ; ?>/mes</span>
+                            </p>
+                        </header>
 
-            <article class="plano animar ao-rolar">
-                <header class="plano__cabecalho">
-                    <h2 class="plano__nome">Empresa</h2>
-                    <p class="plano__descricao">Para equipes de recrutamento.</p>
-                    <p class="plano__preco">
-                        <span class="plano__moeda">R$</span>
-                        <strong>99</strong>
-                        <span class="plano__centavos">,90/mes</span>
-                    </p>
-                </header>
-                <ul class="plano__lista">
-                    <li><?php echo  icone_svg('check') ; ?> Tudo do Profissional</li>
-                    <li><?php echo  icone_svg('check') ; ?> Ate 5 usuarios</li>
-                    <li><?php echo  icone_svg('check') ; ?> 50 envios por dia por usuario</li>
-                    <li><?php echo  icone_svg('check') ; ?> Suporte prioritario</li>
-                    <li><?php echo  icone_svg('check') ; ?> Relatorios consolidados</li>
-                </ul>
-                <a class="botao botao--secundario botao--bloco" href="<?php echo  site_url('contato') ; ?>">
-                    Falar com vendas
-                </a>
-            </article>
+                        <ul class="plano__lista">
+                            <?php foreach ($plano['recursos'] as $recurso) { ?>
+                                <?php if ($recurso['disponivel']) { ?>
+                                    <li><?php echo  icone_svg('check') ; ?> <?php echo esc($recurso['texto']) ; ?></li>
+                                <?php } else { ?>
+                                    <li class="plano__item-indisponivel">
+                                        <?php echo  icone_svg('cadeado') ; ?> <?php echo esc($recurso['texto']) ; ?>
+                                    </li>
+                                <?php } ?>
+                            <?php } ?>
+                        </ul>
+
+                        <a class="botao <?php if ($plano['destaque']) { echo 'botao--primario' ; } else { echo 'botao--secundario' ; } ?> botao--bloco"
+                           href="<?php echo esc($plano['botao_link']) ; ?>">
+                            <?php echo esc($plano['botao']) ; ?>
+                        </a>
+                    </article>
+            <?php } ?>
         </div>
-
-        <p class="planos__aviso">
-            <?php echo  icone_svg('escudo') ; ?>
-            Pagamento via PIX. Liberacao manual em ate 24 horas uteis.
-        </p>
     </div>
 </section>
 
-<?php /* Comparativo. */ ?>
-<section class="secao secao--alternada">
+<?php /* Como contratar. */ ?>
+<section class="secao secao--clara">
     <div class="container">
-        <header class="secao__cabecalho animar ao-rolar">
-            <span class="secao__etiqueta">Comparativo</span>
-            <h2 class="secao__titulo">O que muda entre os planos</h2>
-        </header>
-
-        <div class="tabela-responsiva animar ao-rolar">
-            <table class="tabela">
-                <caption class="sr-only">Comparativo de recursos entre os planos</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Recurso</th>
-                        <th scope="col">Basico</th>
-                        <th scope="col">Profissional</th>
-                        <th scope="col">Empresa</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Palavras-chave</th>
-                        <td>2</td>
-                        <td>Ilimitadas</td>
-                        <td>Ilimitadas</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Cidades por termo</th>
-                        <td>5</td>
-                        <td>Ilimitadas</td>
-                        <td>Ilimitadas</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Envios por dia</th>
-                        <td>10</td>
-                        <td>20</td>
-                        <td>50 por usuario</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Envio automatico</th>
-                        <td>Manual</td>
-                        <td>Ligado</td>
-                        <td>Ligado</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Envio em massa</th>
-                        <td>&mdash;</td>
-                        <td><?php echo  icone_svg('check') ; ?></td>
-                        <td><?php echo  icone_svg('check') ; ?></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Usuarios</th>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>Ate 5</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Suporte</th>
-                        <td>E-mail</td>
-                        <td>E-mail</td>
-                        <td>Prioritario</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="caixa-caixa">
+            <h2 class="secao__titulo">Como funciona a contratação</h2>
+            <ol class="lista-passos">
+                <li>
+                    Escolha o plano aqui e crie sua conta (o plano escolhido já
+                    vai junto no cadastro).
+                </li>
+                <li>
+                    O administrador recebe o seu pedido e confirma o pagamento
+                    do Pix.
+                </li>
+                <li>
+                    Com a aprovação, a sua conta entra no plano escolhido e
+                    os limites entram em vigor.
+                </li>
+                <li>
+                    Quer trocar de plano? Fale com o administrador: a mudança é
+                    feita no painel, sem precisar criar outra conta.
+                </li>
+            </ol>
         </div>
     </div>
 </section>
-
-<?php /* Duvidas sobre pagamento. */ ?>
-<section class="secao">
-    <div class="container container--estreito">
-        <header class="secao__cabecalho animar ao-rolar">
-            <h2 class="secao__titulo">Duvidas sobre pagamento</h2>
-        </header>
-
-        <div class="faq">
-            <details class="faq__item animar ao-rolar">
-                <summary class="faq__pergunta">
-                    Como faco o pagamento?
-                    <span class="faq__icone" aria-hidden="true"></span>
-                </summary>
-                <div class="faq__resposta">
-                    <p>
-                        O pagamento e via PIX. Depois de criar a conta, voce ve a chave na
-                        tela de aguardando aprovacao e clica em "Informar pagamento".
-                    </p>
-                </div>
-            </details>
-
-            <details class="faq__item animar ao-rolar">
-                <summary class="faq__pergunta">
-                    Em quanto tempo o acesso e liberado?
-                    <span class="faq__icone" aria-hidden="true"></span>
-                </summary>
-                <div class="faq__resposta">
-                    <p>
-                        A liberacao e manual e acontece em ate 24 horas uteis apos a
-                        confirmacao do pagamento.
-                    </p>
-                </div>
-            </details>
-
-            <details class="faq__item animar ao-rolar">
-                <summary class="faq__pergunta">
-                    Existe fidelidade ou multa?
-                    <span class="faq__icone" aria-hidden="true"></span>
-                </summary>
-                <div class="faq__resposta">
-                    <p>
-                        Nao. Voce pode cancelar quando quiser, sem multa e sem burocracia.
-                    </p>
-                </div>
-            </details>
-
-            <details class="faq__item animar ao-rolar">
-                <summary class="faq__pergunta">
-                    Posso mudar de plano depois?
-                    <span class="faq__icone" aria-hidden="true"></span>
-                </summary>
-                <div class="faq__resposta">
-                    <p>
-                        Sim. Basta falar com o nosso time e ajustamos o seu plano para o
-                        proximo ciclo.
-                    </p>
-                </div>
-            </details>
-        </div>
-    </div>
-</section>
-
-<section class="cta-final">
-    <div class="container cta-final__interno animar ao-rolar">
-        <h2 class="cta-final__titulo">Comece pelo plano que cabe no seu bolso</h2>
-        <p class="cta-final__subtitulo">
-            Sem contrato. Cancele quando quiser.
-        </p>
-        <a class="botao botao--claro botao--grande" href="<?php echo  site_url('registro') ; ?>">
-            Criar minha conta <?php echo  icone_svg('seta') ; ?>
-        </a>
-    </div>
-</section>
-
-<?php echo  $this->endSection() ; ?>

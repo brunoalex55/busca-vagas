@@ -154,6 +154,118 @@ if ($usadasManuais === 1) {
     </article>
 </div>
 
+<?php /* O plano do usuario e o quanto ele ja usou. */ ?>
+<section class="cartao">
+    <div class="cartao__cabecalho">
+        <h3 class="cartao__titulo">Meu plano</h3>
+        <span class="selo selo--primario"><?php echo esc($plano['nome']) ; ?></span>
+    </div>
+
+    <div class="cartao__corpo">
+        <div class="grade-metricas">
+            <?php
+            // O limite de palavras-chave (NULL = ilimitado).
+            $limitePalavras = $limitesPlano['max_palavras_chave']['valor'];
+            $usoPalavras = (int) $usoPlano['palavras_chave'];
+            $percentualPalavras = 0;
+
+            if ($limitePalavras !== null && (int) $limitePalavras > 0) {
+                $percentualPalavras = min(100, (int) round($usoPalavras * 100 / (int) $limitePalavras));
+            }
+
+            // O limite de envios por dia.
+            $limiteEnvios = (int) $limitesPlano['limite_envios_dia']['valor'];
+            $usoEnvios = (int) $usoPlano['envios_hoje'];
+            $percentualEnviosPlano = 0;
+
+            if ($limiteEnvios > 0) {
+                $percentualEnviosPlano = min(100, (int) round($usoEnvios * 100 / $limiteEnvios));
+            }
+
+            // O limite de cidades por termo (NULL = ilimitado).
+            $limiteCidades = $limitesPlano['max_cidades_por_termo']['valor'];
+            ?>
+
+            <article class="cartao cartao-metrica">
+                <span class="cartao-metrica__rotulo">Palavras-chave</span>
+                <strong class="cartao-metrica__valor">
+                    <?php echo esc($usoPalavras) ; ?>
+                    <small class="cartao-metrica__fracao">
+                        / <?php
+                        if ($limitePalavras === null) {
+                            echo esc('Ilimitadas') ;
+                        } else {
+                            echo esc((int) $limitePalavras) ;
+                        }
+                        ?>
+                    </small>
+                </strong>
+
+                <?php if ($limitePalavras !== null){ ?>
+                    <span class="barra-progresso" role="img"
+                          aria-label="<?php echo esc($percentualPalavras) ; ?>% das palavras-chave usadas">
+                        <span class="barra-progresso__valor" style="width: <?php echo esc($percentualPalavras) ; ?>%"></span>
+                    </span>
+                <?php } ?>
+
+                <span class="cartao-metrica__detalhe">
+                    <?php echo esc($limitesPlano['max_palavras_chave']['rotulo']) ; ?>
+                </span>
+            </article>
+
+            <article class="cartao cartao-metrica">
+                <span class="cartao-metrica__rotulo">Cidades por termo</span>
+                <strong class="cartao-metrica__valor">
+                    <?php
+                    if ($limiteCidades === null) {
+                        echo esc('Ilimitadas') ;
+                    } else {
+                        echo esc((int) $limiteCidades) ;
+                    }
+                    ?>
+                </strong>
+                <span class="cartao-metrica__detalhe">
+                    <?php echo esc($limitesPlano['max_cidades_por_termo']['rotulo']) ; ?>
+                </span>
+            </article>
+
+            <article class="cartao cartao-metrica">
+                <span class="cartao-metrica__rotulo">Envios por dia</span>
+                <strong class="cartao-metrica__valor">
+                    <?php echo esc($usoEnvios) ; ?>
+                    <small class="cartao-metrica__fracao">/ <?php echo esc($limiteEnvios) ; ?></small>
+                </strong>
+
+                <span class="barra-progresso" role="img"
+                      aria-label="<?php echo esc($percentualEnviosPlano) ; ?>% dos envios de hoje">
+                    <span class="barra-progresso__valor" style="width: <?php echo esc($percentualEnviosPlano) ; ?>%"></span>
+                </span>
+
+                <span class="cartao-metrica__detalhe">
+                    <?php echo esc($limitesPlano['limite_envios_dia']['rotulo']) ; ?>
+                </span>
+            </article>
+        </div>
+
+        <?php /* O aviso do limite sobrescrito pelo admin. */ ?>
+        <?php if ($limitesPlano['limite_envios_dia']['origem'] === 'manual'){ ?>
+            <div class="alerta alerta--atencao">
+                <?php echo icone_svg('info'); ?>
+                <p>
+                    <strong>Limite personalizado:</strong> o administrador defini um limite
+                    manual para a sua conta, que vale mais que o do plano.
+                </p>
+            </div>
+        <?php } ?>
+
+        <div class="linha-acoes">
+            <a class="botao botao--secundario botao--pequeno" href="<?php echo site_url('precos') ; ?>">
+                <?php echo icone_svg('site'); ?> Fazer upgrade de plano
+            </a>
+        </div>
+    </div>
+</section>
+
 <?php /* Execucoes manuais do usuario (Bloco E). */ ?>
 <section class="cartao">
     <div class="cartao__cabecalho">

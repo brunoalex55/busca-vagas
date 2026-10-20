@@ -151,6 +151,11 @@ $temFiltro = $filtros['busca'] !== '' || $filtros['status'] !== ''
                             <?php if ((int) $conta['ativo'] === 0){ ?>
                                 <span class="selo selo--erro">Inativo</span>
                             <?php } ?>
+                            <?php /* O plano pedido pelo usuario (o admin precisa saber). */ ?>
+                            <?php $planoConta = texto_ou($conta, 'plano_nome', ''); ?>
+                            <?php if ($planoConta !== ''){ ?>
+                                <span class="selo selo--primario"><?php echo esc($planoConta) ; ?></span>
+                            <?php } ?>
                         </td>
                         <td>
                             <?php echo  number_format($usada, 0, ',', '.') ; ?> / <?php echo  number_format($cota, 0, ',', '.') ; ?>

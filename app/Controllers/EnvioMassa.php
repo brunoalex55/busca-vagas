@@ -3,8 +3,10 @@
 namespace App\Controllers;
 
 use App\Libraries\JanelaEnvio;
+use App\Libraries\ResolvedorPlano;
 use App\Models\EmailEnviadoModel;
 use App\Models\VagaModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 
 /**
@@ -28,6 +30,16 @@ class EnvioMassa extends PainelBase
      */
     public function index(): string
     {
+        // O plano do usuario tem envio em massa? (sem ele, a tela nao
+        // existe para este usuario).
+        $permitido = (new ResolvedorPlano())->podeUsarEnvioEmMassa($this->usuarioId);
+
+        if ($permitido === false) {
+            throw PageNotFoundException::forPageNotFound(
+                'O envio em massa esta disponivel nos planos Profissional e Empresa.'
+            );
+        }
+
         // Configuracao completa (o checklist precisa do valor cifrado).
         $configuracao = $this->configuracaoDoUsuario();
 

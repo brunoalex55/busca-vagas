@@ -38,6 +38,20 @@ $menuPainel = [
     ['rota' => 'painel/configuracoes',  'rotulo' => 'Configuracoes',  'icone' => 'escudo'],
 ];
 
+// O envio em massa so aparece para quem tem o recurso no plano.
+$usuarioSessao = (int) session()->get('usuario_id');
+
+if ($usuarioSessao > 0) {
+    $permiteMassa = (new \App\Libraries\ResolvedorPlano())->podeUsarEnvioEmMassa($usuarioSessao);
+
+    if (! $permiteMassa) {
+        $menuPainel = array_values(array_filter(
+            $menuPainel,
+            static fn (array $item): bool => $item['rota'] !== 'painel/envio-massa'
+        ));
+    }
+}
+
 // Titulo da pagina (vem da view filha, com fallback).
 $tituloPaginaAtual = 'Painel';
 

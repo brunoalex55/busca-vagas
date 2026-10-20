@@ -1,6 +1,6 @@
 # Revisao Final do Projeto
 
-> Revisao final (Entregavel B3), rodada em **19/10/2026**.
+> Revisao final (Entregavel B3), rodada em **20/10/2026**.
 > Os sete testes do plano rodam de ponta a ponta, contra o app em
 > execucao, o banco de dados e a API externa.
 
@@ -15,7 +15,7 @@ php tools/revisao-final.php
 
 ### 1. Fluxo completo do usuario
 
-  PASS  cadastro cria o usuario (id 149)
+  PASS  cadastro cria o usuario (id 150)
   PASS  cadastro devolve 303 (redireciona) (HTTP 303)
   PASS  usuario novo fica pendente (status: pendente)
   PASS  usuario pendente nao entra no painel (HTTP 302)
@@ -37,7 +37,7 @@ php tools/revisao-final.php
   PASS  pagina do admin: /admin (HTTP 200)
   PASS  pagina do admin: /admin/cron (HTTP 200)
   PASS  pagina do admin: /admin/usuarios (HTTP 200)
-  PASS  pagina do admin: /admin/usuarios/149 (HTTP 200)
+  PASS  pagina do admin: /admin/usuarios/150 (HTTP 200)
   PASS  pagina do admin: /admin/chaves (HTTP 200)
   PASS  pagina do admin: /admin/distribuicao (HTTP 200)
   PASS  pagina do admin: /admin/solicitacoes (HTTP 200)
@@ -87,7 +87,7 @@ php tools/revisao-final.php
   PASS  endpoint externo aceita o token pela query string (HTTP 200)
   PASS  endpoint externo devolve 401 com token invalido (HTTP 401)
   PASS  endpoint externo devolve 400 com comando invalido (HTTP 400)
-  PASS  execucao externa registrada em log (cron-externo-2026-10-19.log)
+  PASS  execucao externa registrada em log (cron-externo-2026-10-20.log)
   PASS  fora do modo spark_manual a integracao some do painel (modo: cron_windows)
   PASS  modo restaurado para spark_manual
   PASS  chave de API de teste removida do banco (o painel volta a pedir a chave)

@@ -183,7 +183,120 @@ if (! $eAdmin && $limiteManuais > 0) {
                 </div>
             </form>
 
-            <?php /* Limite manual de consultas. */ ?>
+            <?php /* O plano do usuario e os limites que valem para ele. */ ?>
+<section class="cartao">
+    <div class="cartao__cabecalho">
+        <h3 class="cartao__titulo">Plano e limites</h3>
+        <span class="selo selo--primario"><?php echo esc($plano['nome']) ; ?></span>
+    </div>
+
+    <div class="cartao__corpo">
+        <?php /* O aviso do limite manual (ele vence o plano). */ ?>
+        <?php if (valor_ou($usuario, 'limite_manual', null) !== null){ ?>
+            <div class="alerta alerta--atencao">
+                <?php echo icone_svg('info'); ?>
+                <p>
+                    Este usuario possui limite manual que sobrescreve o plano.
+                </p>
+            </div>
+        <?php } ?>
+
+        <?php /* Os limites efetivos, com a origem de cada um. */ ?>
+        <div class="linha-selos">
+            <span class="selo selo--neutro">
+                Palavras-chave:
+                <?php if ($limites['max_palavras_chave']['valor'] === null){ ?>
+                    Ilimitadas
+                <?php } else { ?>
+                    <?php echo esc((int) $limites['max_palavras_chave']['valor']) ; ?>
+                <?php } ?>
+                (<?php echo esc($limites['max_palavras_chave']['rotulo']) ; ?>)
+            </span>
+
+            <span class="selo selo--neutro">
+                Cidades por termo:
+                <?php if ($limites['max_cidades_por_termo']['valor'] === null){ ?>
+                    Ilimitadas
+                <?php } else { ?>
+                    <?php echo esc((int) $limites['max_cidades_por_termo']['valor']) ; ?>
+                <?php } ?>
+                (<?php echo esc($limites['max_cidades_por_termo']['rotulo']) ; ?>)
+            </span>
+
+            <span class="selo selo--info">
+                <?php echo esc((int) $limites['limite_envios_dia']['valor']) ; ?> envios/dia
+                (<?php echo esc($limites['limite_envios_dia']['rotulo']) ; ?>)
+            </span>
+        </div>
+
+        <?php /* Trocar o plano. */ ?>
+        <form class="formulario" method="post"
+              action="<?php echo esc(site_url('admin/usuarios/' . (int) $usuario['id'] . '/atribuir-plano')) ; ?>">
+            <div class="campo">
+                <label class="campo__rotulo" for="plano_id">Plano do usuario</label>
+                <select class="campo__entrada" id="plano_id" name="plano_id">
+                    <?php foreach ($planosAtivos as $item){ ?>
+                        <?php
+                        // O plano atual (para marcar a opcao escolhida).
+                        $planoAtualId = (int) valor_ou($plano, 'id', 0);
+                        ?>
+                        <option value="<?php echo esc((int) $item['id']) ; ?>"
+                                <?php echo  escolher((int) $item['id'] === $planoAtualId, 'selected', '') ; ?>>
+                            <?php echo esc($item['nome']) ; ?>
+                            (ate <?php echo esc((int) $item['max_usuarios']) ; ?> usuario(s))
+                        </option>
+                    <?php } ?>
+                </select>
+                <span class="campo__ajuda">
+                    O plano define as regras do usuario. A troca vale na hora.
+                </span>
+            </div>
+
+            <div class="formulario__acoes">
+                <button type="submit" class="botao botao--primario botao--pequeno">
+                    <?php echo icone_svg('check') ; ?> Atribuir plano
+                </button>
+            </div>
+        </form>
+
+        <?php /* Voltar para o basico e limpar o limite manual. */ ?>
+        <div class="linha-acoes">
+            <form method="post"
+                  action="<?php echo esc(site_url('admin/usuarios/' . (int) $usuario['id'] . '/remover-plano')) ; ?>"
+                  data-confirmar="Voltar este usuario para o plano basico?">
+                <button type="submit" class="botao botao--fantasma botao--pequeno">
+                    <?php echo icone_svg('relogio') ; ?> Voltar para o Basico
+                </button>
+            </form>
+
+            <form class="formulario" method="post"
+                  action="<?php echo esc(site_url('admin/usuarios/' . (int) $usuario['id'] . '/salvar-limite-manual')) ; ?>">
+                <div class="campo">
+                    <label class="campo__rotulo" for="limite_manual_plano">Limite manual (sobrescreve o plano)</label>
+                    <input class="campo__entrada" type="number" id="limite_manual_plano" name="limite_manual"
+                           min="0" max="100000"
+                           value="<?php
+                        // O valor do limite manual (vazio quando ele nao existe).
+                        $limiteManual = valor_ou($usuario, 'limite_manual', null);
+                        $limiteManualTexto = '';
+
+                        if ($limiteManual !== null) {
+                            $limiteManualTexto = (string) (int) $limiteManual;
+                        }
+                        echo esc($limiteManualTexto) ;
+                        ?>"
+                           placeholder="Vazio = usa o plano">
+                </div>
+                <div class="formulario__acoes">
+                    <button type="submit" class="botao botao--secundario botao--pequeno">
+                        <?php echo icone_svg('escudo') ; ?> Salvar limite manual
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<?php /* Limite manual de consultas. */ ?>
             <form class="formulario" method="post" action="<?php echo  esc($base . '/limite') ; ?>">
                 <div class="campo">
                     <label class="campo__rotulo" for="limite_manual">Limite manual de consultas</label>

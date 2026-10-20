@@ -783,6 +783,10 @@ powershell -File tools/fase8-admin.ps1
 
 # a integracao com o cron-job.org (jobs por tipo, com o mock da API)
 powershell -File tools/fase8-cronjob.ps1
+
+# a Fase 9 (planos por usuario e isolamento de vagas)
+php tools/fase9-testes.php
+powershell -File tools/fase9-admin.ps1
 ```
 
 O teste `fase8-e2e.ps1` e o fim a fim: ele cria uma vaga que aponta
@@ -792,7 +796,140 @@ ficou registrada.
 
 ---
 
-## 33. Licenca
+## 33. Planos por usuario
+
+O site publico promete tres planos (em `/precos`, escrito **Precos** com
+cedilha no texto exibido). Esses mesmos planos ficam no banco (tabela
+`planos`) e o administrador os configura em `/admin/planos`.
+
+| Recurso | Basico | Profissional | Empresa |
+|---|---|---|---|
+| Palavras-chave | 2 | Ilimitadas | Ilimitadas |
+| Cidades por termo | 5 | Ilimitadas | Ilimitadas |
+| Envios por dia | 10 | 20 | 50 por usuario |
+| Envio automatico | Manual | Ligado | Ligado |
+| Envio em massa | - | Sim | Sim |
+| Usuarios | 1 | 1 | Ate 5 |
+| Suporte | E-mail | E-mail | Prioritario |
+
+**NULL = ilimitado.** Onde o plano nao define um limite (palavras-chave
+e cidades por termo nos planos Profissional e Empresa), o valor no banco
+e NULL e o sistema trata isso explicitamente (nunca com ternario).
+
+### 34.1 A ordem de prioridade dos limites
+
+Quando o sistema precisa do valor de um limite, ele procura nesta ordem
+(a primeira que existir vence):
+
+1. **`usuarios.limite_manual`** - o administrador digitou um valor a mao
+   para este usuario (vale sempre e e mostrado como "Limite
+   personalizado");
+2. **`planos.{campo}`** - o plano do usuario (NULL = ilimitado);
+3. **`configuracoes.{campo}`** - o valor legado da conta;
+4. **o padrao do sistema**.
+
+A biblioteca que faz isso e a `App\Libraries\ResolvedorPlano`
+(`resolverLimite`, `resolverLimiteComOrigem`, `podeAdicionarPalavraChave`,
+`podeAdicionarCidade`, `podeEnviarEmailHoje`, `podeUsarEnvioAutomatico`,
+`podeUsarEnvioEmMassa`).
+
+### 34.2 O que o administrador faz
+
+- **`/admin/planos`**: cria, edita, desativa e reativa planos (e ve
+  quantos usuarios tem em cada um);
+- **`/admin/usuarios/{id}`**: atribui o plano, tira o plano (volta para
+  o Basico) e grava o limite manual;
+- o painel do admin mostra **quantos usuarios ha em cada plano** e
+  avisa quando um plano chega em `max_usuarios`;
+- o painel do usuario mostra o card **"Meu plano"** com os limites
+  efetivos, a origem de cada um e as barras de uso.
+
+O plano **basico** nunca pode ser excluido (e o fallback de quem nao tem
+plano): pode ser editado e desativado. Desativar um plano com usuarios
+vinculados e bloqueado.
+
+### 34.3 O bloqueio e sempre no servidor
+
+A interface esconde o que o plano nao permite (o botao de envio em massa
+some do menu, o interruptor de envio automatico nao aparece), mas a
+**decisao e sempre do servidor**:
+
+- cadastrar palavra-chave alem do limite -> recusado com "Seu plano
+  Basico permite 2 palavras-chave...";
+- cadastrar cidade alem do limite -> recusado;
+- ligar o envio automatico sem o recurso -> recusado;
+- abrir `/painel/envio-massa` sem o recurso -> 404/403.
+
+### 34.4 O upgrade e manual
+
+O projeto **nao tem gateway de pagamento**: o botao "Fazer upgrade de
+plano" leva para `/precos`, e a mudanca de plano e feita pelo
+administrador (depois do pagamento do Pix, confirmado por ele). O
+cadastro guarda o plano escolhido, e o admin ve o pedido como
+"Pendente (Plano X)".
+
+---
+
+## 34. Isolamento de vagas por usuario
+
+Uma vaga pertence a um usuario. Isso e garantido em tres camadas:
+
+### 35.1 Toda consulta em `vagas` filtra pelo dono
+
+O `VagaModel` filtra por `usuario_id` em tudo (a listagem, a contagem,
+a fila, a deduplicacao). As consultas que sao globais (os relatorios do
+admin) ficam em metodos proprios, marcados com o comentario:
+
+```php
+// CONSULTA GLOBAL - uso exclusivo do admin
+```
+
+### 35.2 Toda rota com vagaId valida o dono
+
+Antes de qualquer acao, a rota chama o helper
+`obterVagaDoUsuarioOu404($vagaId, $usuarioId)` (o arquivo
+`app/Helpers/vaga_segura_helper.php`):
+
+- a vaga e do usuario -> segue o fluxo;
+- a vaga existe mas e de outra pessoa -> **404** (a mesma resposta de
+  uma pagina que nao existe, para nao revelar que a vaga existe) e o
+  acesso fica registrado no log.
+
+O helper tambem funciona sem a sessao do painel: qualquer tela que
+mostre ou mexa em uma vaga passa por ele.
+
+### 35.3 O log de acesso indevido
+
+A tentativa de acessar a vaga de outra pessoa fica registrada em
+`writable/logs/acesso-indevido-YYYY-MM-DD.log`, com apenas:
+
+```
+2026-10-20 11:00:08 | usuario=1 | vaga=171 | dono=8 | ip=127.0.0.1 | rota=painel/vagas/171
+```
+
+NUNCA e-mail, CPF ou conteudo da vaga: apenas ids, rota e IP.
+
+### 35.4 As UNIQUE obrigatorias
+
+A tabela `vagas` tem duas restricoes unicas (uma por usuario):
+
+- `UNIQUE(job_id, usuario_id)`;
+- `UNIQUE(hash_unico, usuario_id)`.
+
+O SQL de sanidade (deve devolver **0 linhas**; se devolver algo, ha
+vazamento entre usuarios):
+
+```sql
+-- Deve retornar 0 linhas. Se retornar algo, ha vazamento.
+SELECT v.usuario_id, v.job_id, COUNT(*) AS total
+FROM vagas v
+GROUP BY v.usuario_id, v.job_id
+HAVING total > 1;
+```
+
+---
+
+## 35. Licenca
 
 O framework CodeIgniter 4 e distribuido sob a licenca MIT (veja
 `LICENSE`). O codigo do projeto segue a mesma licenca.

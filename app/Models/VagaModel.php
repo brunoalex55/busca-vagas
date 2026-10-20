@@ -218,7 +218,8 @@ class VagaModel extends Model
      *
      * @return list<array<string, mixed>>
      */
-    public function listarCandidaturasRealizadasGlobal(int $limite = 10): array
+        // CONSULTA GLOBAL - uso exclusivo do admin
+public function listarCandidaturasRealizadasGlobal(int $limite = 10): array
     {
         return $this->db->table($this->table . ' v')
             ->select('v.id, v.usuario_id, v.titulo, v.empresa, v.localizacao, v.fonte, v.provedor_vaga, v.ja_candidatado, v.email_contato, v.candidatura_divulgavagas_status, v.candidatura_divulgavagas_em, v.candidatura_divulgavagas_confirmado_em, v.candidatura_divulgavagas_confirmacao_url, v.atualizado_em, u.nome AS usuario_nome')
@@ -250,7 +251,8 @@ class VagaModel extends Model
     /**
      * Conta as vagas candidadas de todo o sistema (admin).
      */
-    public function contarCandidaturasRealizadasGlobal(): int
+        // CONSULTA GLOBAL - uso exclusivo do admin
+public function contarCandidaturasRealizadasGlobal(): int
     {
         return (int) $this->db->table($this->table)
             ->groupStart()
@@ -278,7 +280,8 @@ class VagaModel extends Model
      *
      * @return array<string, int>
      */
-    public function contarPorSituacaoDivulgaVagasGlobal(): array
+        // CONSULTA GLOBAL - uso exclusivo do admin
+public function contarPorSituacaoDivulgaVagasGlobal(): array
     {
         $linhas = $this->db->table($this->table)
             ->select('candidatura_divulgavagas_status AS situacao, COUNT(*) AS total')
@@ -515,7 +518,8 @@ class VagaModel extends Model
      * Total de vagas armazenadas, somando todos os usuarios.
      * Usado no resumo da visao geral do painel administrativo.
      */
-    public function contarGlobal(): int
+        // CONSULTA GLOBAL - uso exclusivo do admin
+public function contarGlobal(): int
     {
         return (int) $this->db->table($this->table)->countAllResults();
     }
@@ -524,7 +528,8 @@ class VagaModel extends Model
      * Total de vagas com e-mail ainda nao candidatadas, somando todos
      * os usuarios (tamanho da fila global de envio).
      */
-    public function contarFilaGlobal(): int
+        // CONSULTA GLOBAL - uso exclusivo do admin
+public function contarFilaGlobal(): int
     {
         return (int) $this->db->table($this->table)
             ->where('ja_candidatado', 0)

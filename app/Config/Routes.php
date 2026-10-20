@@ -30,7 +30,7 @@ $routes->get('recursos', 'Site::recursos', ['as' => 'recursos']);
 // Pagina explicando o passo a passo.
 $routes->get('como-funciona', 'Site::comoFunciona', ['as' => 'como_funciona']);
 
-// Pagina de planos e precos.
+// Pagina de planos e precos (o texto exibido ao usuario e "Preços").
 $routes->get('precos', 'Site::precos', ['as' => 'precos']);
 
 // Formulario de contato (leitura).
@@ -220,6 +220,23 @@ $routes->group('admin', ['filter' => ['autenticacao', 'usuarioativo', 'admin']],
     $routes->post('crons/executar-busca', 'Admin\AdminCron::executarVagas');
     $routes->post('crons/executar-envio', 'Admin\AdminCron::executarEmails');
     $routes->post('crons/regenerar-token', 'Admin\AdminCron::gerarTokenGlobal');
+
+    // ---------------------------------------------------------------------
+    // PLANOS (FASE 9)
+    // ---------------------------------------------------------------------
+    // Os planos que o site publico promete. Toda escrita e POST.
+    $routes->get('planos', 'Admin\AdminPlanos::index', ['as' => 'admin_planos']);
+    $routes->get('planos/formulario', 'Admin\AdminPlanos::formulario', ['as' => 'admin_planos_novo']);
+    $routes->get('planos/formulario/(:num)', 'Admin\AdminPlanos::formulario/$1', ['as' => 'admin_planos_formulario']);
+    $routes->post('planos/salvar', 'Admin\AdminPlanos::salvar');
+    $routes->post('planos/desativar/(:num)', 'Admin\AdminPlanos::desativar/$1');
+    $routes->post('planos/reativar/(:num)', 'Admin\AdminPlanos::reativar/$1');
+    $routes->get('planos/(:segment)/usuarios', 'Admin\AdminPlanos::usuariosDoPlano/$1', ['as' => 'admin_planos_usuarios']);
+
+    // O plano do usuario (atribuir, remover e o limite manual).
+    $routes->post('usuarios/(:num)/atribuir-plano', 'Admin\AdminUsuarios::atribuirPlano/$1');
+    $routes->post('usuarios/(:num)/remover-plano', 'Admin\AdminUsuarios::removerPlano/$1');
+    $routes->post('usuarios/(:num)/salvar-limite-manual', 'Admin\AdminUsuarios::salvarLimiteManual/$1');
 
     // ---------------------------------------------------------------------
     // AGENDAMENTO (FASE 7)

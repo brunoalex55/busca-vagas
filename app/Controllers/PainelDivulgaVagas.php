@@ -217,9 +217,12 @@ class PainelDivulgaVagas extends PainelBase
         $id = (int) $vagaId;
 
         // A vaga tem que ser do usuario e do provedor.
-        $vaga = $this->vagas->buscarDoUsuario($id, $this->usuarioId);
+        // A vaga, mas somente se ela for do usuario da sessao (o helper
+        // tambem registra a tentativa de acesso a vaga de outra pessoa).
+        $vaga = obterVagaDoUsuarioOu404($id, $this->usuarioId);
 
-        if ($vaga === null || texto_ou($vaga, 'provedor_vaga') !== 'divulgavagas') {
+        // A vaga precisa ser do segundo provedor.
+        if (texto_ou($vaga, 'provedor_vaga') !== 'divulgavagas') {
             return $this->voltarComMensagem('Vaga nao encontrada.', false);
         }
 

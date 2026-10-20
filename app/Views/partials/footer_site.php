@@ -82,7 +82,7 @@ $whatsapp = whatsapp_link(valor_ou($site, 'whatsapp_contato', ''));
             <ul class="rodape__lista">
                 <li><a href="<?php echo  site_url('recursos') ; ?>">Recursos</a></li>
                 <li><a href="<?php echo  site_url('como-funciona') ; ?>">Como funciona</a></li>
-                <li><a href="<?php echo  site_url('precos') ; ?>">Precos</a></li>
+                <li><a href="<?php echo  site_url('precos') ; ?>">Preços</a></li>
                 <li><a href="<?php echo  site_url('registro') ; ?>">Criar conta</a></li>
             </ul>
         </nav>

@@ -1466,3 +1466,56 @@ a.canal:hover {
 .planos__aviso {
     padding-inline: var(--espaco-4);
 }
+
+/* -------------------------------------------------------------------------
+   ESCOLHA DE PLANO NO CADASTRO
+   -------------------------------------------------------------------------
+   O bloco de planos do cadastro (radio + nome + resumo das regras).
+   ------------------------------------------------------------------------- */
+
+.cartao-autenticacao__plano {
+    margin-top: var(--espaco-4);
+    padding-top: var(--espaco-4);
+    border-top: 1px solid var(--cor-borda);
+}
+
+.cartao-autenticacao__plano .cartao__titulo {
+    font-size: var(--texto-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cor-texto-suave);
+    margin-bottom: var(--espaco-2);
+}
+
+.cartao-plano {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espaco-2);
+    padding: var(--espaco-2);
+    margin-bottom: var(--espaco-1);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    cursor: pointer;
+    transition: border-color var(--transicao), background var(--transicao);
+}
+
+.cartao-plano:hover {
+    border-color: var(--cor-primaria);
+    background: var(--cor-primaria-clara);
+}
+
+.cartao-plano input {
+    margin-top: 0.2rem;
+    accent-color: var(--cor-primaria);
+}
+
+.cartao-plano__corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cartao-plano__corpo strong {
+    color: var(--cor-texto);
+    font-size: var(--texto-sm);
+}

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\DistribuicaoConsultas;
 use App\Libraries\GerenciadorCron;
+use App\Libraries\ResolvedorPlano;
 use App\Models\EmailEnviadoModel;
 use App\Models\LogConsultaModel;
 use App\Models\PalavraChaveModel;
@@ -44,6 +45,23 @@ class Painel extends PainelBase
 
         // Configuracao completa (com o valor cifrado, usado so no checklist).
         $configuracao = $this->configuracaoDoUsuario();
+
+        // O plano do usuario e os limites que valem para ele.
+        $resolvedor = new ResolvedorPlano();
+        $plano = $resolvedor->obterPlanoDoUsuario($this->usuarioId);
+
+        // Os limites efetivos (com a origem: manual, plano ou padrao).
+        $limitesPlano = [];
+
+        foreach (['max_palavras_chave', 'max_cidades_por_termo', 'limite_envios_dia'] as $campo) {
+            $limitesPlano[$campo] = $resolvedor->resolverLimiteComOrigem($campo, $this->usuarioId);
+        }
+
+        // O que o usuario ja usou (para as barras de progresso).
+        $usoPlano = [
+            'palavras_chave' => (int) $palavras->totalAtivasDoUsuario($this->usuarioId),
+            'envios_hoje'    => (int) $emails->contarHoje($this->usuarioId),
+        ];
 
         // Dados da conta.
         $usuario = $this->usuarioLogado();
@@ -91,6 +109,9 @@ class Painel extends PainelBase
             'configuracao'      => $this->sanitizarConfiguracao($configuracao),
             'execucoesManuais'  => $execucoesManuais,
             'ehAdmin'           => $ehAdmin,
+            'plano'             => $resolvedor->obterPlanoDoUsuario($this->usuarioId),
+            'limitesPlano'      => $limitesPlano,
+            'usoPlano'          => $usoPlano,
         ]));
     }
 

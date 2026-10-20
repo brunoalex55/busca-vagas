@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\ResolvedorPlano;
 use App\Models\PalavraChaveModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -77,8 +78,23 @@ class PalavrasChave extends PainelBase
      */
     public function criar(): RedirectResponse
     {
+        // O plano permite mais uma palavra-chave? (a tela tambem
+        // esconde o botao, mas quem decide e o servidor).
+        $permitido = (new ResolvedorPlano())->podeAdicionarPalavraChave($this->usuarioId);
+
+        if ($permitido['pode'] === false) {
+            return $this->voltarComErros(['palavras_chave' => $this->mensagemDoLimiteDePalavras($permitido)]);
+        }
+
         // Dados normalizados vindos do formulario.
         $dados = $this->dadosDoFormulario();
+
+        // O plano permite quantas cidades por termo?
+        $errosCidades = $this->errosDoLimiteDeCidades($dados);
+
+        if ($errosCidades !== '') {
+            return $this->voltarComErros(['cidades' => $errosCidades]);
+        }
 
         // Validacao de negocio.
         $erros = $this->validar($dados);
@@ -248,6 +264,53 @@ class PalavrasChave extends PainelBase
             ->with('sucesso', 'Palavra-chave excluida.');
     }
 
+    /**
+     * A mensagem do limite de palavras-chave.
+     *
+     * @param array{pode: bool, motivo: string, restantes: int|null, limite: int|null} $permitido
+     */
+    private function mensagemDoLimiteDePalavras(array $permitido): string
+    {
+        $limite = (int) $permitido['limite'];
+        $plano = (new ResolvedorPlano())->obterPlanoDoUsuario($this->usuarioId);
+
+        return 'Seu plano ' . (string) $plano['nome'] . ' permite ' . $limite
+            . ' palavra-chave(s). Faca upgrade no painel para liberar mais.';
+    }
+
+    /**
+     * O erro do limite de cidades por termo (vazio quando pode).
+     *
+     * @param array<string, mixed> $dados Os dados normalizados.
+     */
+    private function errosDoLimiteDeCidades(array $dados): string
+    {
+        $resolvedor = new ResolvedorPlano();
+
+        // O limite do plano (NULL = ilimitado).
+        $limite = $resolvedor->resolverLimite('max_cidades_por_termo', $this->usuarioId);
+
+        // Ilimitado: nunca bloqueia.
+        if ($limite === null) {
+            return '';
+        }
+
+        $cidades = valor_ou($dados, 'cidades', []);
+
+        if (! is_array($cidades)) {
+            $cidades = [];
+        }
+
+        // Dentro do limite: tudo certo.
+        if (count($cidades) <= $limite) {
+            return '';
+        }
+
+        $plano = $resolvedor->obterPlanoDoUsuario($this->usuarioId);
+
+        return 'Seu plano ' . (string) $plano['nome'] . ' permite ' . $limite
+            . ' cidade(s) por termo. Faca upgrade no painel para liberar mais.';
+    }
     /**
      * Le e normaliza os campos enviados pelo formulario.
      *

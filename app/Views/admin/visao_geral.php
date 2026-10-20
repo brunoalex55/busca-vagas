@@ -116,7 +116,56 @@ $seloStatus = static function (string $status): array {
             <?php echo  (int) $solicitacoes['total'] ; ?> no historico.
         </span>
     </article>
+
+    <article class="cartao cartao-metrica">
+        <span class="cartao-metrica__icone cartao-metrica__icone--roxo"><?php echo  icone_svg('usuario') ; ?></span>
+        <span class="cartao-metrica__rotulo">Usuarios por plano</span>
+        <strong class="cartao-metrica__valor"><?php echo  number_format((int) $usuarios['total'], 0, ',', '.') ; ?></strong>
+        <span class="cartao-metrica__detalhe">
+            <?php
+            // A lista de planos com o separador entre eles.
+            $separador = '';
+
+            foreach ($planos as $plano){
+                echo esc($separador);
+                echo esc($plano['nome']);
+                echo ': ';
+                echo esc((int) $plano['usuarios']);
+
+                // O plano esgotado avisa.
+                if ((int) $plano['usuarios'] >= (int) $plano['max_usuarios']) {
+                    echo ' (esgotado)';
+                }
+
+                $separador = ' &middot; ';
+            }
+            ?>
+        </span>
+    </article>
+
+    <article class="cartao cartao-metrica">
+        <span class="cartao-metrica__icone cartao-metrica__icone--laranja"><?php echo  icone_svg('email') ; ?></span>
+        <span class="cartao-metrica__rotulo">No limite de envios</span>
+        <strong class="cartao-metrica__valor"><?php echo  number_format((int) $usuariosNoLimite, 0, ',', '.') ; ?></strong>
+        <span class="cartao-metrica__detalhe">
+            Usuario(s) que ja gastaram o limite diario de envios.
+        </span>
+    </article>
 </div>
+
+<?php /* O alerta de plano esgotado. */ ?>
+<?php foreach ($planos as $plano){ ?>
+    <?php if ((int) $plano['ativo'] === 1 && (int) $plano['usuarios'] >= (int) $plano['max_usuarios']){ ?>
+        <div class="alerta alerta--atencao">
+            <?php echo  icone_svg('info') ; ?>
+            <p>
+                O plano <strong><?php echo esc($plano['nome']) ; ?></strong> chegou ao limite
+                (<?php echo esc((int) $plano['usuarios']) ; ?> de <?php echo esc((int) $plano['max_usuarios']) ; ?>
+                usuario(s)). Nao da para atribuir este plano a mais ninguem.
+            </p>
+        </div>
+    <?php } ?>
+<?php } ?>
 
 <?php /* As candidaturas realizadas (todos os provedores). */ ?>
 <section class="cartao">

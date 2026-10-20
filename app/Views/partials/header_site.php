@@ -11,7 +11,7 @@
  * (assets/js/site.js), apenas para UX visual.
  */
 
-// Rota atual, sem barras nas pontas (ex.: "precos").
+// Rota atual, sem barras nas pontas (ex.: "precos"). O rotulo visivel e "Preços".
 $rotaAtual = trim(uri_string(), '/');
 
 // Dados do site.
@@ -29,7 +29,7 @@ $menu = [
     ['rota' => '',              'rotulo' => 'Inicio'],
     ['rota' => 'recursos',      'rotulo' => 'Recursos'],
     ['rota' => 'como-funciona', 'rotulo' => 'Como funciona'],
-    ['rota' => 'precos',        'rotulo' => 'Precos'],
+    ['rota' => 'precos',        'rotulo' => 'Preços'],
     ['rota' => 'contato',       'rotulo' => 'Contato'],
 ];
 ?>

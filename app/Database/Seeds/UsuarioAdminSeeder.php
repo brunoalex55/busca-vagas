@@ -66,6 +66,10 @@ class UsuarioAdminSeeder extends Seeder
             'ultima_execucao_envio_automatico' => null,
             'ultima_execucao_busca_vagas'      => null,
 
+            // O admin recebe o plano EMPRESA (ele precisa de todos os
+            // recursos para administrar o sistema).
+            'plano_id'                => $this->idDoPlanoEmpresa(),
+
             // Conta ativa.
             'ativo'                 => 1,
 
@@ -76,5 +80,25 @@ class UsuarioAdminSeeder extends Seeder
 
         // Insere o registro na tabela de usuarios.
         $this->db->table('usuarios')->insert($dados);
+    }
+
+    /**
+     * O id do plano Empresa (o admin precisa de todos os recursos).
+     *
+     * Devolve null quando o plano ainda nao existe (o seeder dos planos
+     * roda antes deste).
+     */
+    private function idDoPlanoEmpresa(): ?int
+    {
+        $plano = $this->db->table('planos')
+            ->where('slug', 'empresa')
+            ->get()
+            ->getRowArray();
+
+        if ($plano === null || $plano === []) {
+            return null;
+        }
+
+        return (int) $plano['id'];
     }
 }

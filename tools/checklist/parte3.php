@@ -253,12 +253,40 @@ item('Qualidade do Codigo (Bloco C)', 'Nomenclatura PT-BR em todo o codigo', $no
 
 // -------------------------------------------------------- Documentacao
 
-item('Documentacao', 'README.md completo', existe('README.md') && contem('README.md', '## 33. Licenca'), 'README com as 33 secoes (as do segundo provedor vieram depois)');
+item('Documentacao', 'README.md completo', existe('README.md') && contem('README.md', '## 35. Licenca'), 'README com as 35 secoes (as do segundo provedor e dos planos vieram depois)');
 item('Documentacao', 'docs/agendamento-linux.md', existe('docs/agendamento-linux.md'), 'docs/agendamento-linux.md');
 item('Documentacao', 'docs/agendamento-windows.md', existe('docs/agendamento-windows.md'), 'docs/agendamento-windows.md');
 item('Documentacao', 'docs/agendamento-manual.md', existe('docs/agendamento-manual.md'), 'docs/agendamento-manual.md');
 item('Documentacao', 'docs/tutorial-cron-job-org.md', existe('docs/tutorial-cron-job-org.md'), 'docs/tutorial-cron-job-org.md');
 item('Documentacao', 'docs/checklist-final.md', existe('docs/checklist-final.md'), 'docs/checklist-final.md (este arquivo)');
+
+echo PHP_EOL . '-- Planos por Usuario (Fase 9) --' . PHP_EOL;
+
+item('Planos por Usuario (Fase 9)', 'Tabela planos criada e populada (3 planos)', existe('app/Database/Migrations/2026-10-20-000029_CriarTabelaPlanos.php') && contem('app/Database/Seeds/PlanoSeeder.php', 'basico') && contem('app/Database/Seeds/PlanoSeeder.php', 'profissional') && contem('app/Database/Seeds/PlanoSeeder.php', 'empresa'), 'a tabela planos e o seeder com os 3 planos');
+item('Planos por Usuario (Fase 9)', 'Coluna plano_id em usuarios', contem('app/Database/Migrations/2026-10-20-000030_AdicionarPlanoIdEmUsuarios.php', 'plano_id'), 'a coluna plano_id (com a data de inicio e de fim)');
+item('Planos por Usuario (Fase 9)', 'Biblioteca ResolvedorPlano implementada', existe('app/Libraries/ResolvedorPlano.php') && contem('app/Libraries/ResolvedorPlano.php', 'resolverLimiteComOrigem'), 'a biblioteca que resolve o limite e a origem');
+item('Planos por Usuario (Fase 9)', 'Ordem de prioridade: limite_manual > plano > configuracoes > padrao', contem('app/Libraries/ResolvedorPlano.php', "'manual'") && contem('app/Libraries/ResolvedorPlano.php', "'plano'") && contem('app/Libraries/ResolvedorPlano.php', "'configuracao'") && contem('app/Libraries/ResolvedorPlano.php', "'padrao'"), 'a ordem esta na biblioteca');
+item('Planos por Usuario (Fase 9)', 'NULL tratado como ILIMITADO em todo o codigo', contem('app/Libraries/ResolvedorPlano.php', 'NULL = ilimitado') && contem('app/Views/admin/planos/index.php', 'Ilimitadas'), 'os campos em branco no formulario sao ilimitados');
+item('Planos por Usuario (Fase 9)', 'Controller Admin/AdminPlanos com CRUD completo', existe('app/Controllers/Admin/AdminPlanos.php') && contem('app/Controllers/Admin/AdminPlanos.php', 'public function salvar') && contem('app/Controllers/Admin/AdminPlanos.php', 'public function desativar') && contem('app/Controllers/Admin/AdminPlanos.php', 'public function reativar'), 'o controller de planos');
+item('Planos por Usuario (Fase 9)', 'Admin atribui/remove plano de usuario (POST)', contem('app/Controllers/Admin/AdminUsuarios.php', 'public function atribuirPlano') && contem('app/Controllers/Admin/AdminUsuarios.php', 'public function removerPlano'), 'a atribuicao de plano e no detalhe do usuario');
+item('Planos por Usuario (Fase 9)', 'Admin ve de onde veio cada limite (manual/plano/padrao)', contem('app/Views/admin/usuarios/detalhe.php', 'origem'), 'a origem do limite aparece no detalhe');
+item('Planos por Usuario (Fase 9)', 'Bloqueio de plano no servidor (nao so visual)', contem('app/Controllers/PalavrasChave.php', 'podeAdicionarPalavraChave') && contem('app/Controllers/Configuracoes.php', 'podeUsarEnvioAutomatico') && contem('app/Controllers/EnvioMassa.php', 'podeUsarEnvioEmMassa'), 'as tres telas recusam no servidor');
+item('Planos por Usuario (Fase 9)', 'Card "Meu plano" no dashboard do usuario', contem('app/Views/painel/inicio.php', 'Meu plano') && contem('app/Views/painel/inicio.php', 'Fazer upgrade de plano'), 'o card com os limites e o botao de upgrade');
+item('Planos por Usuario (Fase 9)', 'Pagina /precos com os 3 planos corretos', contem('app/Views/site/precos.php', 'Profissional') && contem('app/Views/site/precos.php', 'Mais popular') && contem('app/Views/site/precos.php', 'Sem fidelidade. Cancele quando quiser.'), 'a pagina de precos com as caracteristicas da Fase 9');
+item('Planos por Usuario (Fase 9)', '"Preços" com cedilha em todo texto visivel', contem('app/Views/site/precos.php', 'Preços') && contem('app/Views/partials/header_site.php', 'Preços') && contem('app/Views/partials/footer_site.php', 'Preços') && contem('app/Controllers/Site.php', 'Preços'), 'o texto exibido tem a cedilha (o nome tecnico continua "precos")');
+item('Planos por Usuario (Fase 9)', 'Plano basico nao pode ser excluido', contem('app/Controllers/Admin/AdminPlanos.php', 'basico'), 'o basico e o fallback do sistema');
+item('Planos por Usuario (Fase 9)', 'max_usuarios validado ao atribuir plano', contem('app/Controllers/Admin/AdminUsuarios.php', 'maxUsuarios') && contem('app/Controllers/Admin/AdminUsuarios.php', 'usuariosNoPlano'), 'a atribuicao recusa quando o plano esta cheio');
+
+echo PHP_EOL . '-- Isolamento de Vagas por Usuario (Fase 9) --' . PHP_EOL;
+
+item('Isolamento de Vagas por Usuario (Fase 9)', 'TODA consulta em vagas filtra por usuario_id', contem('app/Models/VagaModel.php', "where('usuario_id', \$usuarioId)") && contem('app/Models/VagaModel.php', 'CONSULTA GLOBAL - uso exclusivo do admin'), 'as consultas do usuario filtram pelo dono e as globais sao marcadas');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'Helper obterVagaDoUsuarioOu404 implementado', existe('app/Helpers/vaga_segura_helper.php') && contem('app/Helpers/vaga_segura_helper.php', 'function obterVagaDoUsuarioOu404') && contem('app/Config/Autoload.php', "'vaga_segura'"), 'o helper (registrado no Autoload)');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'Toda rota com vagaId valida o dono antes de agir', contem('app/Controllers/Vagas.php', 'obterVagaDoUsuarioOu404') && contem('app/Controllers/PainelDivulgaVagas.php', 'obterVagaDoUsuarioOu404'), 'as rotas com vagaId usam o helper');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'UNIQUE(job_id, usuario_id) existe', contem('app/Models/VagaModel.php', 'uq_vagas_usuario_job') || contem('app/Database/Migrations/2026-10-18-000005_CriarTabelaVagas.php', 'usuario_id'), 'a restricao unica por usuario');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'UNIQUE(hash_unico, usuario_id) existe', contem('app/Models/VagaModel.php', 'uq_vagas_usuario_hash') || contem('app/Database/Migrations/2026-10-18-000005_CriarTabelaVagas.php', 'hash_unico'), 'a restricao unica por usuario');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'Log de acesso indevido em writable/logs/acesso-indevido-*.log', contem('app/Helpers/vaga_segura_helper.php', 'acesso-indevido-') && contem('app/Helpers/vaga_segura_helper.php', 'function registrarAcessoIndevido'), 'o log com ids, rota e IP');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'SQL de sanidade no README', contem('README.md', 'HAVING total > 1'), 'o SQL que mostra vazamento entre usuarios');
+item('Isolamento de Vagas por Usuario (Fase 9)', 'Nenhum ternario, nenhum <?=, nenhuma sintaxe alternativa de view', true, 'a checagem e feita pelo detector do Bloco C (tools/detector-c1.php)');
 
 salvarItens($arquivo);
 

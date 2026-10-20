@@ -1,0 +1,137 @@
+﻿$ErrorActionPreference = 'Continue'
+
+$base = 'http://localhost:8080'
+$raiz = 'C:\Users\Rafael Albanese\Desktop\CI_EMPLOYER'
+$php = 'C:\Users\Rafael Albanese\AppData\Local\php84\php.exe'
+$ajuda = "$raiz\tools\fase9-ajuda.php"
+
+$falhas = 0
+$total = 0
+
+function Checar($rotulo, $ok, $detalhe = '') {
+    if ($ok) { Write-Host ("  PASS  {0}{1}" -f $rotulo, $(if ($detalhe -ne '') { " ($detalhe)" } else { '' })) }
+    else { Write-Host ("  FALHA {0}{1}" -f $rotulo, $(if ($detalhe -ne '') { " ($detalhe)" } else { '' })); $script:falhas++ }
+    $script:total++
+}
+
+# Confere se um texto esta numa pagina (o PHP faz a parte do acento).
+function PaginaTem($url, $texto) {
+    $saida = (& $php 'C:\Users\Rafael Albanese\Desktop\CI_EMPLOYER\tools\fase9-ajuda.php' tela $url $texto 2>&1) -join ''
+
+    if ($saida -match '^(\d+)\|(sim|nao)$') {
+        return @{ Status = [int] $Matches[1]; Tem = ($Matches[2] -eq 'sim') }
+    }
+
+    return @{ Status = 0; Tem = $false }
+}
+
+# Login do admin.
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$null = Invoke-WebRequest -Uri "$base/login" -WebSession $session -UseBasicParsing -TimeoutSec 60
+$null = Invoke-WebRequest -Uri "$base/login" -Method Post -Body @{ email = 'admin@admin.com'; senha = 'admin123' } -WebSession $session -UseBasicParsing -TimeoutSec 60 -MaximumRedirection 5
+
+Write-Host '-- As telas de plano do admin --' -ForegroundColor Yellow
+
+foreach ($rota in @('/admin/planos', '/admin/planos/formulario', '/admin/planos/formulario/2', '/admin/planos/empresa/usuarios')) {
+    try {
+        $r = Invoke-WebRequest -Uri ($base + $rota) -WebSession $session -UseBasicParsing -TimeoutSec 60
+        Checar "GET $rota" ($r.StatusCode -eq 200) "HTTP $($r.StatusCode)"
+    } catch {
+        $codigo = 0
+        if ($_.Exception.Response) { $codigo = [int] $_.Exception.Response.StatusCode }
+        Checar "GET $rota" ($codigo -eq 200) "HTTP $codigo"
+    }
+}
+
+$r = Invoke-WebRequest -Uri "$base/admin/planos" -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'a lista mostra os 3 planos' ($r.Content.Contains('profissional') -and $r.Content.Contains('empresa'))
+Checar 'a lista mostra "Ilimitadas"' ($r.Content.Contains('Ilimitadas'))
+Checar 'a lista mostra o botao de criar' ($r.Content.Contains('admin/planos/formulario'))
+
+Write-Host ''
+Write-Host '-- O detalhe do usuario mostra o plano e a origem --' -ForegroundColor Yellow
+
+$r = Invoke-WebRequest -Uri "$base/admin/usuarios/8" -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'mostra a secao "Plano e limites"' ($r.Content.Contains('Plano e limites'))
+Checar 'mostra o select de plano' ($r.Content.Contains('name="plano_id"'))
+Checar 'mostra o formulario do limite manual' ($r.Content.Contains('salvar-limite-manual'))
+Checar 'mostra a origem do limite' ($r.Content.Contains('Plano ') -or $r.Content.Contains('Padrao do sistema') -or $r.Content.Contains('Configuracao da conta') -or $r.Content.Contains('Limite manual'))
+
+Write-Host ''
+Write-Host '-- Atribuir e remover o plano (POST) --' -ForegroundColor Yellow
+
+$r = Invoke-WebRequest -Uri "$base/admin/usuarios/8/atribuir-plano" -Method Post -Body @{ plano_id = '3' } -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'a atribuicao responde 200' ($r.StatusCode -eq 200) "HTTP $($r.StatusCode)"
+Checar 'a mensagem de sucesso aparece' ($r.Content.Contains('atribuido a'))
+
+$planoAtual = ((& $php $ajuda plano 8 2>&1) -join '').Trim()
+Checar 'o usuario ficou no plano Empresa' ($planoAtual -eq '3') "plano_id: $planoAtual"
+
+$r = Invoke-WebRequest -Uri "$base/admin/usuarios/8/remover-plano" -Method Post -Body @{} -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'a remocao responde 200' ($r.StatusCode -eq 200) "HTTP $($r.StatusCode)"
+
+$planoAtual = ((& $php $ajuda plano 8 2>&1) -join '').Trim()
+Checar 'o usuario voltou para o basico' ($planoAtual -eq '1') "plano_id: $planoAtual"
+
+Write-Host ''
+Write-Host '-- O painel do usuario mostra o card do plano --' -ForegroundColor Yellow
+
+$r = Invoke-WebRequest -Uri "$base/painel" -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'tem o card "Meu plano"' ($r.Content.Contains('Meu plano'))
+Checar 'tem o botao de upgrade' ($r.Content.Contains('Fazer upgrade de plano'))
+Checar 'mostra o limite de palavras-chave' ($r.Content.Contains('Palavras-chave'))
+Checar 'o menu mostra o envio em massa (o admin esta no plano Empresa)' ($r.Content.Contains('painel/envio-massa'))
+
+Write-Host ''
+Write-Host '-- O isolamento pela URL (a vaga de outro usuario) --' -ForegroundColor Yellow
+
+$vagaId = ((& $php $ajuda criar-vaga 2>&1) -join '').Trim()
+Checar 'a vaga de teste foi criada' ($vagaId -match '^\d+$') "id: $vagaId"
+
+if ($vagaId -match '^\d+$') {
+    # O dono (o admin) acessa a propria vaga.
+    $r = Invoke-WebRequest -Uri "$base/painel/vagas/$vagaId" -WebSession $session -UseBasicParsing -TimeoutSec 60
+    Checar 'o dono acessa a propria vaga' ($r.StatusCode -eq 200) "HTTP $($r.StatusCode)"
+
+    # O log de acesso indevido existe (o acesso indevido de antes).
+    $log = "$raiz\writable\logs\acesso-indevido-$(Get-Date -Format 'yyyy-MM-dd').log"
+    Checar 'o log de acesso indevido existe' (Test-Path $log) (Split-Path $log -Leaf)
+}
+
+& $php $ajuda apagar-vaga 2>&1 | Out-Null
+
+Write-Host ''
+Write-Host '-- A pagina de precos --' -ForegroundColor Yellow
+
+$precos = PaginaTem "$base/precos" 'Preços'
+Checar 'o titulo tem "Preços" (com cedilha)' $precos.Tem "HTTP $($precos.Status)"
+
+$basico = PaginaTem "$base/precos" 'Básico'
+Checar 'mostra o plano Basico' $basico.Tem "HTTP $($basico.Status)"
+
+$profissional = PaginaTem "$base/precos" 'Profissional'
+Checar 'mostra o plano Profissional' $profissional.Tem "HTTP $($profissional.Status)"
+
+$empresa = PaginaTem "$base/precos" 'Empresa'
+Checar 'mostra o plano Empresa' $empresa.Tem "HTTP $($empresa.Status)"
+
+$popular = PaginaTem "$base/precos" 'Mais popular'
+Checar 'destaca o Profissional' $popular.Tem "HTTP $($popular.Status)"
+
+$fidelidade = PaginaTem "$base/precos" 'Sem fidelidade. Cancele quando quiser.'
+Checar 'tem o texto "Sem fidelidade. Cancele quando quiser."' $fidelidade.Tem "HTTP $($fidelidade.Status)"
+
+$ilimitadas = PaginaTem "$base/precos" 'Ilimitadas'
+Checar 'mostra "Ilimitadas"' $ilimitadas.Tem "HTTP $($ilimitadas.Status)"
+
+$r = Invoke-WebRequest -Uri "$base/precos" -UseBasicParsing -TimeoutSec 60
+Checar 'o basico mostra o envio em massa como indisponivel' ($r.Content.Contains('plano__item-indisponivel'))
+
+Write-Host ''
+Write-Host "-- o cadastro aceita o plano escolhido --"
+$r = Invoke-WebRequest -Uri "$base/registro?plano=profissional" -UseBasicParsing -TimeoutSec 60
+Checar 'o cadastro mostra o plano escolhido' ($r.Content.Contains('Profissional'))
+Checar 'o cadastro tem o campo do plano' ($r.Content.Contains('name="plano"'))
+
+Write-Host ''
+Write-Host ("RESULTADO: {0} ok | {1} falha(s)" -f ($total - $falhas), $falhas)

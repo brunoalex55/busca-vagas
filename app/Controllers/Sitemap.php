@@ -24,6 +24,8 @@ class Sitemap extends BaseController
             ['rota' => '/',              'prioridade' => '1.0', 'frequencia' => 'weekly'],
             ['rota' => 'recursos',       'prioridade' => '0.9', 'frequencia' => 'monthly'],
             ['rota' => 'como-funciona',  'prioridade' => '0.9', 'frequencia' => 'monthly'],
+            // O nome tecnico da rota e "precos" (o texto exibido ao
+            // usuario e "Preços").
             ['rota' => 'precos',         'prioridade' => '0.9', 'frequencia' => 'monthly'],
             ['rota' => 'sobre',          'prioridade' => '0.7', 'frequencia' => 'yearly'],
             ['rota' => 'contato',        'prioridade' => '0.7', 'frequencia' => 'yearly'],

@@ -9,6 +9,8 @@ namespace App\Controllers;
  *
  * Responde pelas paginas institucionais e de marketing:
  * inicio, recursos, como funciona, precos, contato e sobre.
+ * (precos e o nome tecnico da rota e da view; o texto exibido e
+ * "Preços").
  *
  * Nenhuma dessas rotas usa token CSRF. O formulario de contato e
  * enviado por POST e validado integralmente no servidor.
@@ -71,14 +73,14 @@ class Site extends BaseController
     }
 
     /**
-     * Pagina de planos e precos.
+     * Pagina de planos e precos (o texto exibido e "Preços").
      */
     public function precos(): string
     {
         $seo = [
-            'titulo'         => 'Precos | Planos sem fidelidade para buscar emprego',
+            'titulo'         => 'Preços | Planos sem fidelidade para buscar emprego',
             'descricao'      => 'Planos claros e sem fidelidade. Escolha o ideal para sua busca e cancele quando quiser. Comece gratis e faca upgrade quando precisar.',
-            'palavras_chave' => 'precos, planos, assinatura, sem fidelidade, buscar emprego',
+            'palavras_chave' => 'precos, preços, planos, assinatura, sem fidelidade, buscar emprego',
             'tipo'           => 'product',
         ];
 
@@ -222,7 +224,7 @@ class Site extends BaseController
             'offers' => [
                 [
                     '@type'         => 'Offer',
-                    'name'          => 'Basico',
+                    'name'          => 'Básico',
                     'price'         => '29.90',
                     'priceCurrency' => 'BRL',
                     'availability'  => 'https://schema.org/InStock',
