@@ -15,10 +15,12 @@ Mais informacoes no README.
 Esta pasta guarda as capturas de tela do sistema, usadas na secao
 **"Imagens do ambiente"** do README.
 
-**As imagens aqui sao placeholders.** Substitua cada arquivo pela captura
-real do seu ambiente (as do repositorio foram feitas com dados de teste).
+**As imagens aqui sao as capturas reais do sistema rodando** (com os
+dados de demonstracao). Para usar as do seu ambiente, basta substituir
+cada arquivo pela sua captura: o nome do arquivo e o que o README
+aponta.
 
-Nomes esperados (o README ja aponta para eles):
+Nomes usados (o README ja aponta para eles):
 
 | Arquivo | Tela |
 |---|---|
@@ -33,3 +35,10 @@ Nomes esperados (o README ja aponta para eles):
 | `planos.png` | CRUD dos planos |
 | `pedidos-plano.png` | Pedidos de plano dos usuarios |
 | `faturamento.png` | Relatorio de faturamento |
+
+Para refazer as capturas (o servidor precisa estar no ar com
+`php spark serve`):
+
+```bash
+python tools/gerar-capturas.py
+```

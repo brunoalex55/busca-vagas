@@ -12,6 +12,20 @@ Mais informacoes no README.
 
 # BuscaVagas PRO
 
+> ## Projeto open source
+>
+> **Este projeto e open source.** O codigo esta no GitHub sob a licenca
+> **MIT**: use no seu servidor, altere, traduza, estenda e redistribua
+> como quiser. Nao tem dependencia paga, nao pede licenca e nao trava
+> nenhuma funcao.
+>
+> O repositorio: <https://github.com/brunoalex55/busca-vagas>
+>
+> Se o projeto te ajuda e voce quiser manter ele vivo, a donation em
+> **Pix** e sempre bem-vinda (veja ["Apoie este projeto"](#apoie-este-projeto)
+> no fim deste README). A donation e **voluntaria** e nao compra nenhuma
+> licenca especial nem garantia de suporte.
+
 > SaaS de busca de empregos: encontra vagas no Google Jobs, monta a
 > candidatura com o curriculo em PDF e envia o e-mail **pela conta Gmail de
 > cada usuario**, dentro de uma janela de envios controlada.
@@ -1117,9 +1131,10 @@ exclusivo, nem garantia de suporte.
 
 ## Imagens do ambiente
 
-> **Atenção:** as imagens abaixo são *placeholders*. Elas devem ser
-> substituídas pelas capturas reais do seu ambiente (as do repositório
-> foram feitas com dados de teste).
+> As imagens abaixo sao as capturas reais do sistema rodando (com dados
+> de demonstracao). Se voce quiser usar as do seu ambiente, basta
+> substituir os arquivos da pasta `docs/images/` pelas suas capturas —
+> o nome de cada arquivo esta na tabela da [pasta](docs/images/README.md).
 
 ### Login
 
