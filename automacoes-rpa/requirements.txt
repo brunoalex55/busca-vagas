@@ -1,0 +1,18 @@
+# Dependencias das automacoes RPA (Python 3.8 ou superior).
+#
+# Instalacao (dentro do ambiente virtual do projeto):
+#   python -m pip install -r automacoes-rpa/requirements.txt
+#   python -m playwright install chromium
+#
+# O "chromium" do Playwright so e necessario quando o config.ini usa o
+# canal vazio (sem o "chrome" instalado no sistema).
+
+# Automacao do navegador (Chrome headless persistente).
+playwright==1.49.1
+
+# Leitura do .env do projeto pelos scripts auxiliares.
+python-dotenv==1.0.1
+
+# Gerenciamento de processos (usado pelo servico do Chrome, no Linux e
+# no Windows).
+psutil==6.1.0

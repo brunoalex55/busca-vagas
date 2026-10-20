@@ -1,0 +1,63 @@
+# ----------------------------------------------------------------------
+# CI_EMPLOYER - Defense in depth
+# ----------------------------------------------------------------------
+# The CORRECT setup is to point the web server DocumentRoot at the
+# `public/` directory:
+#
+#     DocumentRoot "C:/.../CI_EMPLOYER/public"
+#
+# This file is a safety net. If the DocumentRoot is (wrongly) pointed at
+# the project root instead, Apache will read this file and refuse to
+# serve the sensitive files below, instead of leaking them over HTTP.
+#
+# NOTE: Apache does NOT read this file when the DocumentRoot is correct
+# (`public/`), because it lives above the DocumentRoot. So it cannot
+# break a correctly configured installation.
+#
+# NOTE: `php spark serve` (the built-in PHP dev server) also ignores
+# .htaccess entirely. It is only safe because its document root is
+# always `public/`.
+# ----------------------------------------------------------------------
+
+# Block directory listing
+Options -Indexes
+
+# --- Sensitive files ---------------------------------------------------
+<FilesMatch "^(\.env|env|composer\.json|composer\.lock|spark|preload\.php|phpunit\.dist\.xml|phpunit\.xml|LICENSE|\.gitignore|php\.cmd|composer\.cmd|serve\.cmd)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
+	</IfModule>
+</FilesMatch>
+
+# --- Sensitive directories ---------------------------------------------
+# app/        -> source code, configs, credentials
+# writable/   -> SQLite database, logs, sessions, uploads
+# vendor/     -> dependencies
+# tests/      -> test code
+# builds/     -> build artifacts
+RedirectMatch 403 ^/(app|vendor|tests|writable|builds|\.git)(/|$)
+
+# --- Never execute anything but the front controller -------------------
+# Mitigates a rogue .php file dropped into public/ via an upload bug.
+<FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh|bat|cmd)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
+	</IfModule>
+</FilesMatch>
+<Files "index.php">
+	<IfModule mod_authz_core.c>
+		Require all granted
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Allow from all
+	</IfModule>
+</Files>

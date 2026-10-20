@@ -1,0 +1,114 @@
+/* ==========================================================================
+   VARIAVEIS CSS
+   --------------------------------------------------------------------------
+   Todos os tokens visuais do projeto em um unico lugar.
+   Alterar aqui reflete em todo o site e nos paineis.
+   ========================================================================== */
+
+:root {
+    /* ---------------------------------------------------------------------
+       CORES DA MARCA
+       --------------------------------------------------------------------- */
+    --cor-primaria: #4f46e5;          /* Roxo principal */
+    --cor-primaria-escura: #4338ca;   /* Roxo para hover */
+    --cor-primaria-clara: #eef2ff;    /* Roxo bem claro para fundos */
+    --cor-secundaria: #3b82f6;        /* Azul de apoio */
+    --cor-secundaria-escura: #2563eb; /* Azul para hover */
+    --cor-destaque: #8b5cf6;          /* Violeta de apoio */
+
+    /* ---------------------------------------------------------------------
+       CORES DE ESTADO
+       --------------------------------------------------------------------- */
+    --cor-sucesso: #10b981;
+    --cor-sucesso-clara: #ecfdf5;
+    --cor-aviso: #f59e0b;
+    --cor-aviso-clara: #fffbeb;
+    --cor-erro: #ef4444;
+    --cor-erro-clara: #fef2f2;
+    --cor-info: #0ea5e9;
+    --cor-info-clara: #f0f9ff;
+
+    /* ---------------------------------------------------------------------
+       CORES NEUTRAS
+       --------------------------------------------------------------------- */
+    --cor-texto: #0f172a;
+    --cor-texto-suave: #475569;
+    --cor-texto-tenue: #94a3b8;
+    --cor-fundo: #ffffff;
+    --cor-fundo-alt: #f8fafc;
+    --cor-fundo-escuro: #0b1120;
+    --cor-borda: #e2e8f0;
+    --cor-borda-forte: #cbd5e1;
+
+    /* ---------------------------------------------------------------------
+       GRADIENTES
+       --------------------------------------------------------------------- */
+    --gradiente-principal: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    --gradiente-escuro: linear-gradient(135deg, #0b1120 0%, #1e1b4b 100%);
+    --gradiente-suave: linear-gradient(135deg, #eef2ff 0%, #eff6ff 100%);
+
+    /* ---------------------------------------------------------------------
+       TIPOGRAFIA
+       --------------------------------------------------------------------- */
+    --fonte-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, sans-serif;
+    --fonte-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        monospace;
+
+    --texto-xs: 0.75rem;
+    --texto-sm: 0.875rem;
+    --texto-base: 1rem;
+    --texto-lg: 1.125rem;
+    --texto-xl: 1.25rem;
+    --texto-2xl: 1.5rem;
+    --texto-3xl: 1.875rem;
+    --texto-4xl: 2.25rem;
+    --texto-5xl: 3rem;
+
+    /* ---------------------------------------------------------------------
+       ESPACAMENTO
+       --------------------------------------------------------------------- */
+    --espaco-1: 0.25rem;
+    --espaco-2: 0.5rem;
+    --espaco-3: 0.75rem;
+    --espaco-4: 1rem;
+    --espaco-5: 1.25rem;
+    --espaco-6: 1.5rem;
+    --espaco-8: 2rem;
+    --espaco-10: 2.5rem;
+    --espaco-12: 3rem;
+    --espaco-16: 4rem;
+    --espaco-20: 5rem;
+
+    /* ---------------------------------------------------------------------
+       CANTOS ARREDONDADOS
+       --------------------------------------------------------------------- */
+    --raio-sm: 8px;
+    --raio-md: 12px;
+    --raio-lg: 16px;
+    --raio-xl: 24px;
+    --raio-completo: 999px;
+
+    /* ---------------------------------------------------------------------
+       SOMBRAS
+       --------------------------------------------------------------------- */
+    --sombra-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --sombra-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --sombra-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+    --sombra-xl: 0 24px 60px rgba(15, 23, 42, 0.18);
+    --sombra-primaria: 0 12px 28px rgba(79, 70, 229, 0.28);
+
+    /* ---------------------------------------------------------------------
+       TRANSICOES
+       --------------------------------------------------------------------- */
+    --transicao-rapida: 150ms ease;
+    --transicao: 250ms ease;
+    --transicao-lenta: 400ms ease;
+
+    /* ---------------------------------------------------------------------
+       LAYOUT
+       --------------------------------------------------------------------- */
+    --largura-container: 1200px;
+    --largura-estreita: 820px;
+    --altura-cabecalho: 76px;
+}

@@ -1,0 +1,376 @@
+/* ==========================================================================
+   RESPONSIVO
+   --------------------------------------------------------------------------
+   Media queries globais organizadas em tres pontos de quebra:
+     - 1024px  -> tablet / notebook pequeno
+     - 768px   -> celular grande (menu hamburguer entra em acao)
+     - 480px   -> celular pequeno
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   ATE 1024px - TABLET
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+
+    /* Hero passa a ter uma coluna: texto e depois mockup. */
+    .hero__interno {
+        grid-template-columns: 1fr;
+        gap: var(--espaco-12);
+        text-align: center;
+    }
+
+    .hero__subtitulo,
+    .hero__prova {
+        margin-inline: auto;
+    }
+
+    .hero__acoes,
+    .hero__prova {
+        justify-content: center;
+    }
+
+    .hero__mockup {
+        max-width: 620px;
+        margin-inline: auto;
+        width: 100%;
+    }
+
+    /* Duas colunas nos numeros. */
+    .numeros {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Uma coluna nos beneficios. */
+    .beneficios,
+    .depoimentos,
+    .passos {
+        grid-template-columns: 1fr;
+    }
+
+    /* A linha conectora dos passos perde o sentido em uma coluna. */
+    .passos::before {
+        display: none;
+    }
+
+    /* Planos empilhados. */
+    .planos {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+        margin-inline: auto;
+    }
+
+    .plano--destaque {
+        margin-top: 0;
+    }
+
+    /* Rodape em duas colunas. */
+    .rodape__grade {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--espaco-8);
+    }
+
+    .rodape__coluna--marca {
+        grid-column: 1 / -1;
+        max-width: none;
+    }
+
+    /* Autenticacao em uma coluna. */
+    .autenticacao {
+        grid-template-columns: 1fr;
+        gap: var(--espaco-8);
+        max-width: 560px;
+    }
+
+    .autenticacao__lado {
+        text-align: center;
+    }
+
+    .autenticacao__lado .lista-checagem {
+        align-items: center;
+    }
+
+    /* Contato em uma coluna. */
+    .contato__grade {
+        grid-template-columns: 1fr;
+        gap: var(--espaco-8);
+    }
+}
+
+/* -------------------------------------------------------------------------
+   ATE 768px - CELULAR GRANDE
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    /* Espacamento geral menor. */
+    .secao {
+        padding: 64px 0;
+    }
+
+    .container {
+        padding-inline: var(--espaco-4);
+    }
+
+    .secao__cabecalho {
+        margin-bottom: var(--espaco-10);
+    }
+
+    /* ---------------------------------------------------------------------
+       MENU MOBILE
+       --------------------------------------------------------------------- */
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    /* A navegacao vira um painel deslizante abaixo do header. */
+    .navegacao {
+        position: fixed;
+        top: var(--altura-cabecalho);
+        left: 0;
+        right: 0;
+        z-index: 99;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--espaco-4);
+        padding: var(--espaco-5) var(--espaco-4) var(--espaco-6);
+        background: #ffffff;
+        border-bottom: 1px solid var(--cor-borda);
+        box-shadow: var(--sombra-lg);
+        transform: translateY(-130%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform var(--transicao), opacity var(--transicao);
+    }
+
+    /* Estado aberto. */
+    .navegacao--aberta {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .navegacao__lista {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+    }
+
+    .navegacao__link {
+        display: block;
+        padding: 12px 14px;
+        font-size: var(--texto-base);
+    }
+
+    .navegacao__acoes {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--espaco-2);
+        padding-top: var(--espaco-4);
+        border-top: 1px solid var(--cor-borda);
+    }
+
+    .navegacao__acoes .botao {
+        width: 100%;
+    }
+
+    /* ---------------------------------------------------------------------
+       HERO
+       --------------------------------------------------------------------- */
+
+    .hero {
+        padding: 48px 0 64px;
+    }
+
+    .hero__acoes .botao {
+        width: 100%;
+    }
+
+    .hero__prova {
+        flex-direction: column;
+        gap: var(--espaco-3);
+    }
+
+    /* Mockup um pouco menor. */
+    .mockup {
+        transform: none;
+    }
+
+    .mockup__cartoes {
+        grid-template-columns: 1fr;
+    }
+
+    .mockup__corpo {
+        min-height: 0;
+    }
+
+    /* ---------------------------------------------------------------------
+       NUMEROS E PASSOS
+       --------------------------------------------------------------------- */
+
+    .numeros {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--espaco-3);
+    }
+
+    .numero-destaque {
+        padding: var(--espaco-4);
+    }
+
+    .passo {
+        padding: var(--espaco-6);
+    }
+
+    .passo__numero {
+        font-size: 2.4rem;
+    }
+
+    /* ---------------------------------------------------------------------
+       CABECALHOS INTERNOS
+       --------------------------------------------------------------------- */
+
+    .pagina-topo {
+        padding: 48px 0 40px;
+    }
+
+    .pagina-topo__acoes .botao {
+        width: 100%;
+    }
+
+    /* ---------------------------------------------------------------------
+       CTA FINAL
+       --------------------------------------------------------------------- */
+
+    .cta-final {
+        padding: 64px 0;
+    }
+
+    .cta-final__acoes .botao {
+        width: 100%;
+    }
+
+    /* ---------------------------------------------------------------------
+       RODAPE
+       --------------------------------------------------------------------- */
+
+    .rodape {
+        padding-top: 48px;
+    }
+
+    .rodape__grade {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--espaco-6);
+    }
+
+    .rodape__base-interno {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* ---------------------------------------------------------------------
+       AUTENTICACAO E APROVACAO
+       --------------------------------------------------------------------- */
+
+    .cartao-autenticacao,
+    .cartao-aprovacao {
+        padding: var(--espaco-5);
+    }
+
+    .contato__formulario {
+        padding: var(--espaco-5);
+    }
+
+    /* ---------------------------------------------------------------------
+       PASSOS DETALHADOS
+       --------------------------------------------------------------------- */
+
+    .bloco-passo {
+        grid-template-columns: 52px 1fr;
+        gap: var(--espaco-4);
+    }
+
+    .bloco-passo__numero {
+        width: 48px;
+        height: 48px;
+        font-size: 1.15rem;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   ATE 480px - CELULAR PEQUENO
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+
+    /* Tipografia ligeiramente menor. */
+    :root {
+        --texto-lg: 1.05rem;
+    }
+
+    .secao {
+        padding: 48px 0;
+    }
+
+    /* Marca sem o slogan para ganhar espaco. */
+    .marca__texto small {
+        display: none;
+    }
+
+    .marca__simbolo,
+    .marca__imagem {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Numeros em uma coluna. */
+    .numeros {
+        grid-template-columns: 1fr;
+    }
+
+    /* Rodape em uma coluna. */
+    .rodape__grade {
+        grid-template-columns: 1fr;
+    }
+
+    /* Planos e cartoes com menos padding. */
+    .plano,
+    .cartao-recurso,
+    .depoimento,
+    .passo {
+        padding: var(--espaco-5);
+    }
+
+    /* Mockup: esconde a coluna de menu para nao comprimir. */
+    .mockup__corpo {
+        grid-template-columns: 1fr;
+    }
+
+    .mockup__menu {
+        display: none;
+    }
+
+    /* Tabelas continuam roláveis horizontalmente. */
+    .tabela {
+        min-width: 560px;
+    }
+
+    /* Toasts ocupam a largura toda. */
+    .toasts {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        max-width: none;
+    }
+
+    /* Bloco PIX em coluna. */
+    .pix__linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Botoes grandes passam a ocupar a largura. */
+    .botao--grande {
+        width: 100%;
+    }
+}

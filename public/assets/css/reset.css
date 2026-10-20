@@ -1,0 +1,110 @@
+/* ==========================================================================
+   RESET CSS
+   --------------------------------------------------------------------------
+   Normalizacao moderna, sem framework.
+   Objetivo: comportamento consistente entre navegadores e base previsivel
+   para o restante da folha de estilos.
+   ========================================================================== */
+
+/* Todos os elementos usam box-sizing border-box: padding e borda passam a
+   fazer parte da largura declarada. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Remove as margens padrao de todos os elementos. O espacamento passa a ser
+   controlado explicitamente pelo projeto. */
+* {
+    margin: 0;
+}
+
+/* Rolagem suave para os links de ancora (#como-funciona, #faq...). */
+html {
+    scroll-behavior: smooth;
+    /* Impede que o iOS aumente o texto ao girar a tela. */
+    -webkit-text-size-adjust: 100%;
+    /* Compensa o header fixo ao parar em uma ancora. */
+    scroll-padding-top: 96px;
+}
+
+/* Corpo ocupa no minimo a tela inteira e usa entrelinha confortavel. */
+body {
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Midias nunca ultrapassam o container. */
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Formularios herdam a fonte e a cor do documento. */
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+/* Textos longos quebram corretamente. */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: break-word;
+}
+
+/* Links sem sublinhado por padrao (o sublinhado e aplicado onde faz sentido). */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Listas sem marcadores e sem recuo. */
+ul,
+ol {
+    list-style: none;
+    padding: 0;
+}
+
+/* Botoes sem estilo nativo. */
+button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+/* Tabelas compactas por padrao. */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* Respeita quem prefere menos animacao. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

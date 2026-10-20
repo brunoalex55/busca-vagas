@@ -1,0 +1,1100 @@
+/* ==========================================================================
+   PAINEL DO USUARIO
+   --------------------------------------------------------------------------
+   Estrutura de dashboard: menu lateral escuro, topo fixo e area de
+   conteudo clara. O mesmo esqueleto e reaproveitado pelo admin.
+   ========================================================================== */
+
+/* Corpo do painel. */
+.corpo-painel {
+    background: var(--cor-fundo-alt);
+}
+
+/* Estrutura geral: menu + conteudo. */
+.painel {
+    display: grid;
+    grid-template-columns: 264px 1fr;
+    min-height: 100vh;
+}
+
+/* -------------------------------------------------------------------------
+   MENU LATERAL
+   ------------------------------------------------------------------------- */
+
+.painel__menu {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: var(--espaco-5) var(--espaco-4);
+    background: var(--cor-fundo-escuro);
+    color: #cbd5e1;
+    overflow-y: auto;
+}
+
+/* Marca dentro do painel. */
+.marca--painel {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    padding: var(--espaco-2) var(--espaco-2) var(--espaco-5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: var(--espaco-4);
+}
+
+.marca--painel .marca__texto strong {
+    color: #ffffff;
+    font-size: 0.98rem;
+}
+
+.marca--painel .marca__texto small {
+    color: #94a3b8;
+}
+
+/* Navegacao lateral. */
+.menu-lateral {
+    flex: 1;
+}
+
+.menu-lateral__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menu-lateral__link {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    padding: 11px 14px;
+    border-radius: var(--raio-sm);
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: #94a3b8;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+.menu-lateral__link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+/* Item ativo. */
+.menu-lateral__link--ativo {
+    background: rgba(79, 70, 229, 0.28);
+    color: #ffffff;
+    box-shadow: inset 3px 0 0 #818cf8;
+}
+
+.menu-lateral__link .icone {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Rodape do menu. */
+.painel__menu-rodape {
+    padding-top: var(--espaco-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* -------------------------------------------------------------------------
+   AREA DE CONTEUDO
+   ------------------------------------------------------------------------- */
+
+.painel__conteudo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Barra superior. */
+.painel__topo {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-4);
+    min-height: 72px;
+    padding: var(--espaco-3) var(--espaco-6);
+    background: #ffffff;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.painel__titulo {
+    font-size: var(--texto-xl);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+/* Bloco do usuario no topo. */
+.painel__usuario {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    margin-left: auto;
+}
+
+.painel__usuario-nome {
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.painel__usuario .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: var(--texto-xs);
+}
+
+/* Conteudo principal. */
+.painel__principal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-5);
+    padding: var(--espaco-6);
+    flex: 1;
+}
+
+/* Botao hamburguer do painel (escondido no desktop). */
+.menu-toggle--painel {
+    display: none;
+}
+
+/* -------------------------------------------------------------------------
+   CARTOES DE METRICA (usados a partir da Fase 2)
+   ------------------------------------------------------------------------- */
+
+.grade-metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--espaco-4);
+}
+
+.cartao-metrica {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+    padding: var(--espaco-5);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-sm);
+    transition: transform var(--transicao), box-shadow var(--transicao);
+}
+
+.cartao-metrica:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-md);
+}
+
+.cartao-metrica__rotulo {
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cor-texto-suave);
+}
+
+.cartao-metrica__valor {
+    font-size: var(--texto-3xl);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.cartao-metrica__detalhe {
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+}
+
+/* -------------------------------------------------------------------------
+   LAYOUT RESPONSIVO DO PAINEL
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+    .painel {
+        grid-template-columns: 1fr;
+    }
+
+    /* Menu vira painel deslizante. */
+    .painel__menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 200;
+        transform: translateX(-100%);
+        transition: transform var(--transicao);
+        box-shadow: var(--sombra-xl);
+    }
+
+    .painel__menu--aberto {
+        transform: translateX(0);
+    }
+
+    /* Botao hamburguer aparece no topo. */
+    .menu-toggle--painel {
+        display: flex;
+    }
+
+    .painel__usuario-nome {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .painel__principal {
+        padding: var(--espaco-4);
+    }
+
+    .painel__topo {
+        padding: var(--espaco-3) var(--espaco-4);
+    }
+
+    .painel__titulo {
+        font-size: var(--texto-lg);
+    }
+
+    .cartao__corpo,
+    .cartao__cabecalho {
+        padding: var(--espaco-4);
+    }
+}
+
+/* ==========================================================================
+   COMPONENTES DO PAINEL (FASE 2)
+   --------------------------------------------------------------------------
+   Cabecalho de pagina, metricas, abas, filtros, listas de vagas, checklist,
+   formularios em duas colunas e paginacao manual.
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   CABECALHO DE PAGINA
+   ------------------------------------------------------------------------- */
+
+.painel__cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+    flex-wrap: wrap;
+}
+
+.painel__saudacao {
+    font-size: var(--texto-2xl);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.painel__descricao {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+}
+
+.painel__acoes {
+    display: flex;
+    gap: var(--espaco-3);
+    flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------------------
+   CARTOES DE METRICA (complemento)
+   ------------------------------------------------------------------------- */
+
+.cartao-metrica__icone {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+}
+
+.cartao-metrica__icone .icone {
+    width: 22px;
+    height: 22px;
+}
+
+.cartao-metrica__icone--azul {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.cartao-metrica__icone--verde {
+    background: var(--cor-sucesso-clara);
+    color: var(--cor-sucesso);
+}
+
+.cartao-metrica__icone--roxo {
+    background: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+}
+
+.cartao-metrica__icone--laranja {
+    background: var(--cor-aviso-clara);
+    color: var(--cor-aviso);
+}
+
+.cartao-metrica__fracao {
+    font-size: var(--texto-base);
+    font-weight: 600;
+    color: var(--cor-texto-suave);
+}
+
+.cartao-metrica__valor--texto {
+    font-size: var(--texto-xl);
+}
+
+/* Link de acao no cabecalho do cartao. */
+.cartao__link {
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--cor-primaria);
+}
+
+.cartao__link:hover {
+    text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+   GRADES DO PAINEL
+   ------------------------------------------------------------------------- */
+
+.grade--painel {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    align-items: start;
+}
+
+.coluna-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-5);
+}
+
+/* -------------------------------------------------------------------------
+   ESTADO VAZIO
+   ------------------------------------------------------------------------- */
+
+.estado-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--espaco-3);
+    padding: var(--espaco-8) var(--espaco-4);
+    color: var(--cor-texto-suave);
+}
+
+.estado-vazio .icone {
+    width: 40px;
+    height: 40px;
+    color: var(--cor-primaria);
+    opacity: 0.85;
+}
+
+.estado-vazio h3 {
+    font-size: var(--texto-lg);
+    font-weight: 800;
+    color: var(--cor-texto);
+}
+
+.estado-vazio--compacto {
+    padding: var(--espaco-5) var(--espaco-2);
+}
+
+/* -------------------------------------------------------------------------
+   LISTAS SIMPLES
+   ------------------------------------------------------------------------- */
+
+.lista-limpa {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--espaco-3) 0;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.item-lista:last-child {
+    border-bottom: 0;
+}
+
+.item-lista--linha {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+}
+
+.item-lista__titulo {
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.item-lista__meta {
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+}
+
+/* -------------------------------------------------------------------------
+   ABAS
+   ------------------------------------------------------------------------- */
+
+.abas {
+    display: flex;
+    gap: var(--espaco-2);
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.abas--ancoras {
+    flex-wrap: wrap;
+    overflow: visible;
+}
+
+.aba {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--raio-completo);
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--cor-texto-suave);
+    white-space: nowrap;
+    transition: background-color var(--transicao), color var(--transicao), border-color var(--transicao);
+}
+
+.aba:hover {
+    background: #ffffff;
+    border-color: var(--cor-borda);
+    color: var(--cor-texto);
+}
+
+.aba--ativa,
+.aba--ativa:hover {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #ffffff;
+    box-shadow: var(--sombra-primaria);
+}
+
+.aba__contagem {
+    padding: 1px 8px;
+    border-radius: var(--raio-completo);
+    background: rgba(15, 23, 42, 0.08);
+    font-size: var(--texto-xs);
+}
+
+.aba--ativa .aba__contagem {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+/* -------------------------------------------------------------------------
+   FILTROS
+   ------------------------------------------------------------------------- */
+
+.filtros {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+    padding: var(--espaco-5);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-sm);
+}
+
+.filtros__grade {
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) auto;
+    gap: var(--espaco-4);
+    align-items: end;
+}
+
+.filtros__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-5);
+    padding-bottom: 6px;
+}
+
+.filtros__acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--espaco-3);
+}
+
+/* Caixa de marcacao com rotulo. */
+.campo-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--texto-sm);
+    color: var(--cor-texto);
+    cursor: pointer;
+}
+
+.campo-check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--cor-primaria);
+}
+
+/* -------------------------------------------------------------------------
+   LISTA DE VAGAS
+   ------------------------------------------------------------------------- */
+
+.lista-vagas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+}
+
+.vaga-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+    padding: var(--espaco-5);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-sm);
+    transition: box-shadow var(--transicao), transform var(--transicao);
+}
+
+.vaga-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-md);
+}
+
+.vaga-item__topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+}
+
+.vaga-item__titulo {
+    font-size: var(--texto-lg);
+    font-weight: 800;
+}
+
+.vaga-item__titulo a {
+    color: var(--cor-texto);
+}
+
+.vaga-item__titulo a:hover {
+    color: var(--cor-primaria);
+}
+
+.vaga-item__empresa {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+}
+
+.vaga-item__descricao {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+}
+
+.vaga-item__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-3);
+}
+
+.vaga-item__dado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+}
+
+.vaga-item__dado .icone {
+    width: 15px;
+    height: 15px;
+}
+
+.vaga-item__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-3);
+    padding-top: var(--espaco-2);
+}
+
+/* -------------------------------------------------------------------------
+   TAGS
+   ------------------------------------------------------------------------- */
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: var(--raio-completo);
+    background: #f1f5f9;
+    color: var(--cor-texto-suave);
+    font-size: var(--texto-xs);
+    font-weight: 600;
+}
+
+.tag--mais {
+    background: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+}
+
+/* -------------------------------------------------------------------------
+   DETALHE DA VAGA
+   ------------------------------------------------------------------------- */
+
+.detalhe-selos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+}
+
+.lista-dados {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px var(--espaco-4);
+}
+
+.lista-dados dt {
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cor-texto-suave);
+}
+
+.lista-dados dd {
+    font-size: var(--texto-sm);
+    color: var(--cor-texto);
+}
+
+.email-destaque {
+    font-weight: 700;
+    word-break: break-all;
+}
+
+/* -------------------------------------------------------------------------
+   CENTRAL DE ENVIO
+   ------------------------------------------------------------------------- */
+
+.cartao__corpo--linha {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+    flex-wrap: wrap;
+}
+
+.estado-envio {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-4);
+}
+
+.estado-envio__icone {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f1f5f9;
+    color: var(--cor-texto-suave);
+    flex-shrink: 0;
+}
+
+.estado-envio__icone--ligado {
+    background: var(--cor-sucesso-clara);
+    color: var(--cor-sucesso);
+}
+
+.estado-envio__titulo {
+    font-size: var(--texto-lg);
+    font-weight: 800;
+}
+
+/* Checklist. */
+.checklist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+}
+
+.checklist__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espaco-3);
+}
+
+.checklist__icone {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: var(--cor-texto-suave);
+    flex-shrink: 0;
+}
+
+.checklist__icone--ok {
+    background: var(--cor-sucesso-clara);
+    color: var(--cor-sucesso);
+}
+
+.checklist__icone--pendente {
+    background: var(--cor-aviso-clara);
+    color: var(--cor-aviso);
+}
+
+.checklist__icone .icone {
+    width: 16px;
+    height: 16px;
+}
+
+/* -------------------------------------------------------------------------
+   CURRICULO E FORMULARIOS
+   ------------------------------------------------------------------------- */
+
+.arquivo-atual {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-4);
+    padding: var(--espaco-4);
+    background: var(--cor-fundo-alt);
+    border-radius: var(--raio-md);
+}
+
+.arquivo-atual .icone {
+    width: 28px;
+    height: 28px;
+    color: var(--cor-primaria);
+}
+
+.arquivo-atual .botao {
+    margin-left: auto;
+}
+
+.formulario--duas-colunas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--espaco-4);
+    align-items: start;
+}
+
+.formulario--duas-colunas .formulario__acoes {
+    grid-column: 1 / -1;
+}
+
+.formulario__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--espaco-3);
+}
+
+/* Dias da semana. */
+.dias-semana {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+}
+
+.dia-semana {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid var(--cor-borda-forte);
+    border-radius: var(--raio-completo);
+    font-size: var(--texto-sm);
+    cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao), color var(--transicao);
+}
+
+.dia-semana input {
+    accent-color: var(--cor-primaria);
+}
+
+.dia-semana:has(input:checked) {
+    background: var(--cor-primaria-clara);
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+    font-weight: 700;
+}
+
+/* -------------------------------------------------------------------------
+   PAGINACAO MANUAL
+   ------------------------------------------------------------------------- */
+
+.paginacao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: var(--espaco-2);
+}
+
+.paginacao__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    background: #ffffff;
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--cor-texto);
+    transition: border-color var(--transicao), color var(--transicao), background-color var(--transicao);
+}
+
+.paginacao__item:hover {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+}
+
+.paginacao__item--atual,
+.paginacao__item--atual:hover {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #ffffff;
+}
+
+.paginacao__item--inativo {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.paginacao__reticencias {
+    padding: 0 4px;
+    color: var(--cor-texto-suave);
+}
+
+/* -------------------------------------------------------------------------
+   BOTAO DE PERIGO E UTILITARIOS
+   ------------------------------------------------------------------------- */
+
+.botao--perigo {
+    color: var(--cor-erro);
+}
+
+.botao--perigo:hover {
+    background: var(--cor-erro-clara);
+}
+
+.visualmente-oculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.acoes-tabela {
+    display: flex;
+    gap: 4px;
+}
+
+.texto-pequeno {
+    font-size: var(--texto-xs);
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVO DOS COMPONENTES
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 820px) {
+    .filtros__grade {
+        grid-template-columns: 1fr;
+    }
+
+    .painel__cabecalho {
+        flex-direction: column;
+    }
+
+    .vaga-item__topo {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 560px) {
+    .vaga-item__acoes .botao,
+    .formulario__acoes .botao {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .paginacao__item {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   DIVULGA VAGAS (SEGUNDO PROVEDOR)
+   -------------------------------------------------------------------------
+   Selos da candidatura pelo site, cartao de execucao manual, barra de
+   limite e historico das execucoes.
+   ------------------------------------------------------------------------- */
+
+/* Aguardando o bot: amarelo. */
+.selo--divulgavagas-pendente {
+    background: var(--cor-aviso-clara);
+    color: #b45309;
+}
+
+/* Aguardando o e-mail: amarelo mais claro. */
+.selo--divulgavagas-espera {
+    background: #fefce8;
+    color: #a16207;
+}
+
+/* Enviada pelo site: verde claro. */
+.selo--divulgavagas-enviada {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+/* Enviada pelo site E por e-mail (o duplo envio): verde. */
+.badge-duplo-envio {
+    background: var(--cor-sucesso-clara);
+    color: #047857;
+}
+
+/* Erro na candidatura: vermelho. */
+.selo--divulgavagas-erro {
+    background: var(--cor-erro-clara);
+    color: #b91c1c;
+}
+
+/* Bloqueio do Cloudflare: laranja. */
+.selo--divulgavagas-cloudflare {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+/* Cartao que agrupa as execucoes manuais. */
+.card-execucao-manual {
+    display: grid;
+    gap: var(--espaco-4);
+    margin-top: var(--espaco-4);
+}
+
+/* Barra do limite diario de execucoes manuais. */
+.barra-limite-manual {
+    margin-top: var(--espaco-2);
+}
+
+.barra-limite-manual__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-2);
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+    margin-bottom: var(--espaco-1);
+}
+
+.barra-limite-manual__topo strong {
+    color: var(--cor-texto);
+}
+
+.barra-limite-manual__aviso {
+    margin-top: var(--espaco-1);
+    font-size: var(--texto-xs);
+    color: #b45309;
+}
+
+/* Lista do historico de execucoes. */
+.historico-execucoes .item-lista {
+    margin: 0;
+}
+
+.historico-execucoes .item-lista--linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-2);
+    padding: var(--espaco-1) 0;
+}
+
+/* Tabela do historico completo. */
+.tabela-envolucao {
+    overflow-x: auto;
+}
+
+.tabela-envolucao .tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--texto-sm);
+}
+
+.tabela-envolucao th,
+.tabela-envolucao td {
+    padding: var(--espaco-1);
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda);
+    white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------
+   AJUSTES RESPONSIVOS DO DIVULGA VAGAS (SEGUNDO PROVEDOR)
+   -------------------------------------------------------------------------
+   As telas novas (execucao manual do painel e do admin) usam as barras
+   de limite e as tabelas de historico. Em tela estreita a barra
+   empilha os textos e a tabela continua rolando na horizontal.
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+    .barra-limite-manual__topo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espaco-1);
+    }
+
+    .barra-limite-manual__topo strong {
+        font-size: var(--texto-sm);
+    }
+
+    .historico-execucoes .item-lista--linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tabela-envolucao th,
+    .tabela-envolucao td {
+        font-size: var(--texto-xs);
+    }
+}

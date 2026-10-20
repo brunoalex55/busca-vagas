@@ -1,0 +1,793 @@
+/* ==========================================================================
+   COMPONENTES
+   --------------------------------------------------------------------------
+   Blocos reutilizaveis por todo o projeto: botoes, cartoes, campos de
+   formulario, alertas, selos, avatares, tabelas, toasts e utilidades.
+   ========================================================================== */
+
+/* -------------------------------------------------------------------------
+   MARCA (usada no site, no painel e no admin)
+   ------------------------------------------------------------------------- */
+
+.marca {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    flex-shrink: 0;
+}
+
+/* Simbolo com gradiente. */
+.marca__simbolo {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--gradiente-principal);
+    color: #ffffff;
+    box-shadow: var(--sombra-primaria);
+}
+
+.marca__simbolo svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Imagem de logo enviada pelo admin. */
+.marca__imagem {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* Texto da marca. */
+.marca__texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.marca__texto strong {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cor-texto);
+}
+
+.marca__texto small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--cor-texto-suave);
+}
+
+/* -------------------------------------------------------------------------
+   BOTOES
+   ------------------------------------------------------------------------- */
+
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-2);
+    min-height: 48px;
+    padding: 12px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--raio-md);
+    font-size: var(--texto-base);
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: transform var(--transicao), box-shadow var(--transicao),
+        background-color var(--transicao), border-color var(--transicao),
+        color var(--transicao);
+}
+
+/* Icone dentro do botao. */
+.botao .icone {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Botao principal com gradiente. */
+.botao--primario {
+    background: var(--gradiente-principal);
+    color: #ffffff;
+    box-shadow: var(--sombra-primaria);
+}
+
+.botao--primario:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 16px 34px rgba(79, 70, 229, 0.36);
+}
+
+.botao--primario:active {
+    transform: translateY(0) scale(0.99);
+}
+
+/* Botao secundario com borda. */
+.botao--secundario {
+    background: #ffffff;
+    border-color: var(--cor-borda-forte);
+    color: var(--cor-texto);
+    box-shadow: var(--sombra-sm);
+}
+
+.botao--secundario:hover {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+    transform: translateY(-2px);
+}
+
+/* Botao fantasma (sem fundo). */
+.botao--fantasma {
+    background: transparent;
+    color: var(--cor-texto-suave);
+    border-color: transparent;
+}
+
+.botao--fantasma:hover {
+    background: var(--cor-fundo-alt);
+    color: var(--cor-primaria);
+}
+
+/* Botao claro para fundos escuros. */
+.botao--claro {
+    background: #ffffff;
+    color: var(--cor-primaria);
+    box-shadow: var(--sombra-lg);
+}
+
+.botao--claro:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--sombra-xl);
+}
+
+/* Botao contornado claro para fundos escuros. */
+.botao--contorno-claro {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+}
+
+.botao--contorno-claro:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+}
+
+/* Tamanhos. */
+.botao--pequeno {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: var(--texto-sm);
+    border-radius: var(--raio-sm);
+}
+
+.botao--grande {
+    min-height: 56px;
+    padding: 16px 28px;
+    font-size: var(--texto-lg);
+    border-radius: var(--raio-lg);
+}
+
+/* Ocupa toda a largura do container. */
+.botao--bloco {
+    width: 100%;
+}
+
+/* Botao desabilitado. */
+.botao:disabled,
+.botao[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* -------------------------------------------------------------------------
+   BOTAO HAMBURGUER (site, painel e admin)
+   ------------------------------------------------------------------------- */
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: var(--raio-sm);
+    border: 1px solid var(--cor-borda);
+    background: #ffffff;
+}
+
+.menu-toggle__barra {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--cor-texto);
+    border-radius: 2px;
+    transition: transform var(--transicao), opacity var(--transicao);
+}
+
+/* Estado aberto: transforma as barras em um X. */
+.menu-toggle--aberto .menu-toggle__barra:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle--aberto .menu-toggle__barra:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle--aberto .menu-toggle__barra:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* -------------------------------------------------------------------------
+   CARTOES
+   ------------------------------------------------------------------------- */
+
+.cartao {
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    box-shadow: var(--sombra-sm);
+    overflow: hidden;
+}
+
+.cartao__cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-4);
+    padding: var(--espaco-5) var(--espaco-6);
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.cartao__titulo {
+    font-size: var(--texto-lg);
+    font-weight: 700;
+}
+
+.cartao__corpo {
+    padding: var(--espaco-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+}
+
+/* Botoes soltos dentro do corpo do cartao nao devem esticar a largura toda. */
+.cartao__corpo > .botao {
+    align-self: flex-start;
+}
+
+/* -------------------------------------------------------------------------
+   FORMULARIOS
+   ------------------------------------------------------------------------- */
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-5);
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+}
+
+.campo__rotulo {
+    font-size: var(--texto-sm);
+    font-weight: 700;
+    color: var(--cor-texto);
+}
+
+.campo__entrada {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid var(--cor-borda-forte);
+    border-radius: var(--raio-md);
+    font-size: var(--texto-base);
+    color: var(--cor-texto);
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.campo__entrada::placeholder {
+    color: var(--cor-texto-tenue);
+}
+
+.campo__entrada:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+}
+
+/* Area de texto. */
+.campo__entrada--area {
+    min-height: 130px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* Texto de ajuda abaixo do campo. */
+.campo__ajuda {
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+}
+
+/* Campo com botao ao lado (mostrar/ocultar senha). */
+.campo__com-acao {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.campo__com-acao .campo__entrada {
+    padding-right: 64px;
+}
+
+.campo__ver-senha {
+    position: absolute;
+    right: 8px;
+    padding: 8px 10px;
+    border-radius: var(--raio-sm);
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    color: var(--cor-primaria);
+    transition: background-color var(--transicao);
+}
+
+.campo__ver-senha:hover {
+    background: var(--cor-primaria-clara);
+}
+
+/* Nota ao final do formulario. */
+.formulario__nota {
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+    text-align: center;
+}
+
+.formulario__nota a {
+    color: var(--cor-primaria);
+    text-decoration: underline;
+}
+
+/* Formulario em linha (ex.: botao de logout). */
+.form-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    margin: 0;
+}
+
+/* -------------------------------------------------------------------------
+   ALERTAS
+   ------------------------------------------------------------------------- */
+
+.alerta {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espaco-3);
+    padding: var(--espaco-4) var(--espaco-5);
+    border: 1px solid transparent;
+    border-radius: var(--raio-md);
+    font-size: var(--texto-sm);
+    line-height: 1.6;
+}
+
+.alerta .icone {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.alerta--info {
+    background: var(--cor-info-clara);
+    border-color: #bae6fd;
+    color: #075985;
+}
+
+.alerta--sucesso {
+    background: var(--cor-sucesso-clara);
+    border-color: #a7f3d0;
+    color: #065f46;
+}
+
+.alerta--atencao {
+    background: var(--cor-aviso-clara);
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.alerta--erro {
+    background: var(--cor-erro-clara);
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+/* -------------------------------------------------------------------------
+   SELOS / BADGES
+   ------------------------------------------------------------------------- */
+
+.selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--raio-completo);
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.selo--admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.selo--sucesso {
+    background: var(--cor-sucesso-clara);
+    color: #047857;
+}
+
+.selo--aviso {
+    background: var(--cor-aviso-clara);
+    color: #b45309;
+}
+
+.selo--erro {
+    background: var(--cor-erro-clara);
+    color: #b91c1c;
+}
+
+.selo--info {
+    background: var(--cor-info-clara);
+    color: #0369a1;
+}
+
+.selo--primario {
+    background: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+}
+
+.selo--neutro {
+    background: #f1f5f9;
+    color: var(--cor-texto-suave);
+}
+
+/* -------------------------------------------------------------------------
+   AVATARES (feitos em CSS, sem imagens externas)
+   ------------------------------------------------------------------------- */
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gradiente-principal);
+    color: #ffffff;
+    font-size: var(--texto-sm);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    border: 2px solid #ffffff;
+    box-shadow: var(--sombra-sm);
+}
+
+.avatar--1 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.avatar--2 { background: linear-gradient(135deg, #0ea5e9, #3b82f6); }
+.avatar--3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.avatar--4 { background: linear-gradient(135deg, #10b981, #0d9488); }
+
+/* Grupo de avatares sobrepostos. */
+.avatares {
+    display: flex;
+    align-items: center;
+}
+
+.avatares .avatar + .avatar {
+    margin-left: -14px;
+}
+
+/* -------------------------------------------------------------------------
+   ESTRELAS DE AVALIACAO
+   ------------------------------------------------------------------------- */
+
+.estrelas {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #f59e0b;
+}
+
+.estrelas svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* -------------------------------------------------------------------------
+   LISTA COM CHECAGEM
+   ------------------------------------------------------------------------- */
+
+.lista-checagem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+    margin-top: var(--espaco-4);
+}
+
+.lista-checagem li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espaco-2);
+    font-size: var(--texto-sm);
+    color: var(--cor-texto-suave);
+    line-height: 1.5;
+}
+
+.lista-checagem .icone {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--cor-sucesso);
+}
+
+/* Variante clara para fundos escuros. */
+.lista-checagem--clara li {
+    color: #cbd5e1;
+}
+
+.lista-checagem--clara .icone {
+    color: #34d399;
+}
+
+/* -------------------------------------------------------------------------
+   TABELAS
+   ------------------------------------------------------------------------- */
+
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    background: #ffffff;
+    box-shadow: var(--sombra-sm);
+}
+
+.tabela {
+    min-width: 640px;
+    font-size: var(--texto-sm);
+}
+
+.tabela th,
+.tabela td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela thead th {
+    background: var(--cor-fundo-alt);
+    font-weight: 700;
+    color: var(--cor-texto);
+    white-space: nowrap;
+}
+
+.tabela tbody th {
+    font-weight: 600;
+    color: var(--cor-texto);
+}
+
+.tabela tbody td {
+    color: var(--cor-texto-suave);
+}
+
+.tabela tbody tr:last-child th,
+.tabela tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tabela tbody tr:hover {
+    background: #f8fafc;
+}
+
+.tabela .icone {
+    width: 18px;
+    height: 18px;
+    color: var(--cor-sucesso);
+}
+
+/* -------------------------------------------------------------------------
+   GRADE GENERICA
+   ------------------------------------------------------------------------- */
+
+.grade {
+    display: grid;
+    gap: var(--espaco-6);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* -------------------------------------------------------------------------
+   TOASTS / NOTIFICACOES
+   ------------------------------------------------------------------------- */
+
+.toasts {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+    max-width: min(420px, calc(100vw - 40px));
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espaco-3);
+    padding: var(--espaco-4) var(--espaco-5);
+    border-radius: var(--raio-md);
+    border: 1px solid transparent;
+    background: #ffffff;
+    box-shadow: var(--sombra-lg);
+    pointer-events: auto;
+    animation: toast-entrar 350ms ease both;
+}
+
+.toast--sucesso {
+    border-color: #a7f3d0;
+    background: #f0fdf4;
+    color: #065f46;
+}
+
+.toast--erro {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.toast__icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-weight: 900;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.toast__icone .icone {
+    width: 16px;
+    height: 16px;
+}
+
+.toast__texto {
+    flex: 1;
+    font-size: var(--texto-sm);
+    line-height: 1.5;
+}
+
+.toast__fechar {
+    font-size: 20px;
+    line-height: 1;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0 2px;
+}
+
+.toast__fechar:hover {
+    opacity: 1;
+}
+
+/* Animacao de entrada do toast. */
+@keyframes toast-entrar {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* -------------------------------------------------------------------------
+   BARRA DE PROGRESSO
+   ------------------------------------------------------------------------- */
+
+.barra-progresso {
+    display: block;
+    width: 100%;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: var(--raio-completo);
+    overflow: hidden;
+}
+
+.barra-progresso__valor {
+    display: block;
+    height: 100%;
+    border-radius: var(--raio-completo);
+    background: var(--gradiente-principal);
+    transition: width var(--transicao-lenta);
+}
+
+/* -------------------------------------------------------------------------
+   INTERRUPTOR (switch)
+   ------------------------------------------------------------------------- */
+
+.interruptor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    cursor: pointer;
+}
+
+.interruptor input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.interruptor__trilho {
+    position: relative;
+    width: 52px;
+    height: 30px;
+    background: var(--cor-borda-forte);
+    border-radius: var(--raio-completo);
+    transition: background-color var(--transicao);
+    flex-shrink: 0;
+}
+
+.interruptor__trilho::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: var(--sombra-sm);
+    transition: transform var(--transicao);
+}
+
+.interruptor input:checked + .interruptor__trilho {
+    background: var(--cor-primaria);
+}
+
+.interruptor input:checked + .interruptor__trilho::after {
+    transform: translateX(22px);
+}
+
+.interruptor input:focus-visible + .interruptor__trilho {
+    outline: 3px solid rgba(79, 70, 229, 0.35);
+    outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------------
+   ICONE PADRAO
+   ------------------------------------------------------------------------- */
+
+.icone {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}

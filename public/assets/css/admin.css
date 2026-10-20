@@ -1,0 +1,517 @@
+/* ==========================================================================
+   PAINEL ADMINISTRATIVO
+   --------------------------------------------------------------------------
+   Ajustes visuais sobre o esqueleto de painel.css. O admin tem uma
+   identidade mais sobria (azul-petroleo) para se diferenciar da area
+   do usuario.
+   ========================================================================== */
+
+/* Corpo do admin. */
+.corpo-admin {
+    background: #f1f5f9;
+}
+
+/* Menu lateral com tom proprio. */
+.painel__menu--admin {
+    background: linear-gradient(180deg, #0b1120 0%, #111c33 100%);
+}
+
+/* Destaque do item ativo no admin. */
+.painel__menu--admin .menu-lateral__link--ativo {
+    background: rgba(14, 165, 233, 0.22);
+    box-shadow: inset 3px 0 0 #38bdf8;
+}
+
+/* Barra superior do admin. */
+.painel--admin .painel__topo {
+    border-bottom-color: #dbe3ee;
+}
+
+/* Selo de administrador. */
+.selo--admin {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+/* -------------------------------------------------------------------------
+   COMPONENTES EXCLUSIVOS DO ADMIN (a partir da Fase 5)
+   ------------------------------------------------------------------------- */
+
+/* Caixa de destaque com o token do cron. */
+.caixa-token {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-3);
+    padding: var(--espaco-4);
+    background: #0f172a;
+    border-radius: var(--raio-md);
+    color: #e2e8f0;
+}
+
+.caixa-token code {
+    font-family: var(--fonte-mono);
+    font-size: var(--texto-sm);
+    word-break: break-all;
+    flex: 1;
+}
+
+/* Grafico de barras em CSS puro. */
+.grafico-barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 180px;
+    padding: var(--espaco-4);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+}
+
+.grafico-barras__item {
+    flex: 1;
+    min-width: 8px;
+    background: var(--gradiente-principal);
+    border-radius: 4px 4px 0 0;
+    transition: height var(--transicao-lenta);
+}
+
+/* Abas por provedor (usadas na Fase 3). */
+.abas-provedor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    padding-bottom: var(--espaco-3);
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.abas-provedor__item {
+    padding: 8px 14px;
+    border-radius: var(--raio-completo);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    font-size: var(--texto-sm);
+    font-weight: 600;
+    color: var(--cor-texto-suave);
+    transition: all var(--transicao);
+}
+
+.abas-provedor__item:hover {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+}
+
+.abas-provedor__item--ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #ffffff;
+}
+
+/* Cartao de vaga. */
+.cartao-vaga {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+    padding: var(--espaco-5);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    transition: box-shadow var(--transicao), border-color var(--transicao);
+}
+
+.cartao-vaga:hover {
+    border-color: #c7d2fe;
+    box-shadow: var(--sombra-md);
+}
+
+.cartao-vaga__cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espaco-2);
+}
+
+.cartao-vaga__titulo {
+    font-size: var(--texto-base);
+    font-weight: 800;
+}
+
+.cartao-vaga__meta {
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+}
+
+.cartao-vaga__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    margin-top: var(--espaco-2);
+}
+
+/* ==========================================================================
+   COMPONENTES DO PAINEL ADMINISTRATIVO
+   --------------------------------------------------------------------------
+   Pecas usadas apenas nas telas administrativas. A base continua em
+   componentes.css e painel.css.
+   ========================================================================== */
+
+/* Linha de selos de resumo no topo das listagens. */
+.linha-selos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+}
+
+/* Linha de botoes/acoes dentro de um cartao. */
+.linha-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-3);
+    margin-top: var(--espaco-3);
+}
+
+/* Lista de definicao (rotulo x valor). */
+.lista-definicao {
+    display: grid;
+    gap: var(--espaco-2);
+    margin-bottom: var(--espaco-4);
+}
+
+.lista-definicao > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espaco-2);
+    padding-bottom: var(--espaco-2);
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.lista-definicao dt {
+    font-weight: 600;
+    color: var(--cor-texto-suave);
+    font-size: var(--texto-sm);
+}
+
+.lista-definicao dd {
+    font-weight: 700;
+    color: var(--cor-texto);
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Bloco pequeno de numero com rotulo (resumos). */
+.bloco-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--espaco-4);
+    background: var(--cor-fundo-alt);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+}
+
+.bloco-resumo__rotulo {
+    font-size: var(--texto-xs);
+    font-weight: 600;
+    color: var(--cor-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bloco-resumo__valor {
+    font-size: var(--texto-2xl);
+    font-weight: 800;
+    color: var(--cor-texto);
+}
+
+/* Celula de tabela com informacao secundaria abaixo do titulo. */
+.celula-bloco {
+    display: block;
+    margin-top: 2px;
+}
+
+/* Codigo mascarado (ex.: chave da API). */
+.codigo-mascarado {
+    display: inline-block;
+    font-family: var(--fonte-mono);
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+    background: var(--cor-fundo-alt);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+    padding: 2px 6px;
+    word-break: break-all;
+}
+
+/* Grade de tres colunas (blocos pequenos). */
+.grade--tres {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* Texto interno de itens de lista (nome + meta). */
+.item-lista__texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.item-lista__texto--linha {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+}
+
+/* Bloco de imagem na configuracao do site. */
+.bloco-imagem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+    padding: var(--espaco-4);
+    background: var(--cor-fundo-alt);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+}
+
+.bloco-imagem__rotulo {
+    font-size: var(--texto-xs);
+    font-weight: 700;
+    color: var(--cor-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bloco-imagem__previa {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    padding: var(--espaco-2);
+    background: #ffffff;
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-sm);
+}
+
+/* Variacao clara da caixa de token (endpoints do cron). */
+.caixa-token--clara {
+    background: var(--cor-fundo-alt);
+    color: var(--cor-texto);
+    border: 1px solid var(--cor-borda);
+    margin-top: var(--espaco-2);
+}
+
+/* Barra de progresso fina, usada dentro de tabelas. */
+.barra-progresso--fina {
+    height: 6px;
+    margin-top: 4px;
+}
+
+/* Acoes do formulario de configuracao do site. */
+.formulario__acoes--fixas {
+    margin-top: var(--espaco-2);
+    margin-bottom: var(--espaco-5);
+}
+
+/* Bloco expansivel (details/summary) usado nos tutorials do painel. */
+.bloco-expandido {
+    margin-top: var(--espaco-4);
+    background: var(--cor-fundo-alt);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    overflow: hidden;
+}
+
+.bloco-expandido__titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+    padding: var(--espaco-3) var(--espaco-4);
+    font-size: var(--texto-base);
+    font-weight: 700;
+    color: var(--cor-texto);
+    cursor: pointer;
+    list-style: none;
+    transition: background var(--transicao-rapida);
+}
+
+.bloco-expandido__titulo:hover {
+    background: var(--cor-primaria-clara);
+}
+
+/* Remove o marcador nativo no Chrome/Safari. */
+.bloco-expandido__titulo::-webkit-details-marker {
+    display: none;
+}
+
+/* Remove o marcador nativo no Firefox. */
+.bloco-expandido__titulo::marker {
+    content: "";
+}
+
+.bloco-expandido[open] .bloco-expandido__titulo {
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.bloco-expandido__corpo {
+    padding: var(--espaco-4);
+}
+
+/* Icone de mais/menos desenhado em CSS. */
+.bloco-expandido__icone {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.bloco-expandido__icone::before,
+.bloco-expandido__icone::after {
+    content: "";
+    position: absolute;
+    background: var(--cor-primaria);
+    border-radius: 2px;
+    transition: transform var(--transicao);
+}
+
+.bloco-expandido__icone::before {
+    top: 8px;
+    left: 0;
+    width: 18px;
+    height: 2px;
+}
+
+.bloco-expandido__icone::after {
+    top: 0;
+    left: 8px;
+    width: 2px;
+    height: 18px;
+}
+
+.bloco-expandido[open] .bloco-expandido__icone::after {
+    transform: rotate(90deg);
+}
+
+/* Numeracao dos passos do tutorial. */
+.tutorial-passos {
+    counter-reset: passo;
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 var(--espaco-4);
+}
+
+.tutorial-passos > li {
+    position: relative;
+    padding-left: 2.4rem;
+    margin-bottom: var(--espaco-3);
+    color: var(--cor-texto-suave);
+    font-size: var(--texto-sm);
+}
+
+.tutorial-passos > li:last-child {
+    margin-bottom: 0;
+}
+
+.tutorial-passos > li::before {
+    counter-increment: passo;
+    content: counter(passo);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    background: var(--cor-primaria);
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: var(--texto-xs);
+    font-weight: 700;
+}
+
+/* Subtitulo de um passo do tutorial. */
+.tutorial-passos__titulo {
+    display: block;
+    font-weight: 700;
+    color: var(--cor-texto);
+    margin-bottom: 2px;
+}
+
+/* -------------------------------------------------------------------------
+   DIVULGA VAGAS (SEGUNDO PROVEDOR) - AREA ADMINISTRATIVA
+   -------------------------------------------------------------------------
+   Lista com marcador e ajustes das telas do segundo provedor.
+   ------------------------------------------------------------------------- */
+
+/* Lista com marcador (os itens com um ponto na frente). */
+.lista-marcada {
+    list-style: none;
+    padding-left: 0;
+    margin: var(--espaco-2) 0;
+}
+
+.lista-marcada li {
+    position: relative;
+    padding-left: var(--espaco-5);
+    margin-bottom: var(--espaco-2);
+    color: var(--cor-texto-suave);
+    font-size: var(--texto-sm);
+    line-height: 1.6;
+}
+
+.lista-marcada li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--cor-primaria);
+}
+
+.lista-marcada strong {
+    color: var(--cor-texto);
+}
+
+.lista-marcada code {
+    display: inline-block;
+    margin-top: 2px;
+    font-size: var(--texto-xs);
+    color: var(--cor-texto-suave);
+    word-break: break-all;
+}
+
+/* A tela do segundo provedor no admin: os blocos ficam lado a lado
+   quando ha espaco. */
+.card-execucao-admin {
+    display: grid;
+    gap: var(--espaco-4);
+}
+
+/* Ajustes responsivos das telas administrativas. */
+@media (max-width: 720px) {
+    .lista-definicao dd {
+        text-align: left;
+    }
+
+    .item-lista__texto--linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Ajustes responsivos das telas administrativas. */
+@media (max-width: 720px) {
+    .lista-definicao dd {
+        text-align: left;
+    }
+
+    .item-lista__texto--linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
