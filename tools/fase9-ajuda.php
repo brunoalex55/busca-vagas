@@ -100,6 +100,89 @@ if ($acao === 'tela') {
     exit(0);
 }
 
+if ($acao === 'criar-usuario') {
+    // Um usuario de teste no plano basico (com a senha conhecida).
+    $email = 'fase9-http@busca-vagas.teste';
+
+    $db->table('usuarios')->where('email', $email)->delete();
+    $db->table('palavras_chave')->where('usuario_id', 1)->delete();
+
+    $db->table('usuarios')->insert([
+        'nome'     => 'Usuario Fase 9 HTTP',
+        'email'    => $email,
+        'senha'    => password_hash('teste-123', PASSWORD_BCRYPT),
+        'perfil'   => 'usuario',
+        'status'   => 'ativo',
+        'plano_id' => 1,
+        'ativo'    => 1,
+    ]);
+
+    $linha = $db->table('usuarios')->where('email', $email)->get()->getRowArray();
+
+    echo (string) $linha['id'];
+
+    exit(0);
+}
+
+if ($acao === 'palavras') {
+    // Cria as palavras-chave de teste (a quantidade vem no argumento).
+    $usuarioId = (int) ($argv[2] ?? 0);
+    $quantidade = (int) ($argv[3] ?? 0);
+
+    $db->table('palavras_chave')->where('usuario_id', $usuarioId)->delete();
+
+    for ($i = 1; $i <= $quantidade; $i++) {
+        $db->table('palavras_chave')->insert([
+            'usuario_id' => $usuarioId,
+            'termo'      => 'Palavra Fase 9 ' . $i,
+            'cidades'    => json_encode(['Ponta Grossa - PR']),
+            'idioma'     => 'pt',
+            'pais'       => 'br',
+            'ativa'      => 1,
+        ]);
+    }
+
+    echo (string) $quantidade;
+
+    exit(0);
+}
+
+if ($acao === 'max-usuarios') {
+    // Muda o max_usuarios de um plano (so para o teste) e devolve o valor.
+    $slug = (string) ($argv[2] ?? 'empresa');
+    $novo = (int) ($argv[3] ?? 1);
+
+    $plano = $db->table('planos')->where('slug', $slug)->get()->getRowArray();
+
+    if ($plano === null || $plano === []) {
+        echo '0';
+        exit(0);
+    }
+
+    $antes = (int) $plano['max_usuarios'];
+
+    $db->table('planos')->where('id', (int) $plano['id'])->update(['max_usuarios' => $novo]);
+
+    echo (string) $antes;
+
+    exit(0);
+}
+
+if ($acao === 'apagar-usuario') {
+    $email = 'fase9-http@busca-vagas.teste';
+
+    $linha = $db->table('usuarios')->where('email', $email)->get()->getRowArray();
+
+    if ($linha !== null && $linha !== []) {
+        $db->table('palavras_chave')->where('usuario_id', (int) $linha['id'])->delete();
+        $db->table('usuarios')->where('id', (int) $linha['id'])->delete();
+    }
+
+    echo 'ok';
+
+    exit(0);
+}
+
 echo 'acao desconhecida';
 
 exit(1);

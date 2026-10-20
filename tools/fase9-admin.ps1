@@ -134,4 +134,55 @@ Checar 'o cadastro mostra o plano escolhido' ($r.Content.Contains('Profissional'
 Checar 'o cadastro tem o campo do plano' ($r.Content.Contains('name="plano"'))
 
 Write-Host ''
+Write-Host '-- O bloqueio no servidor (usuario no plano basico) --' -ForegroundColor Yellow
+
+$usuarioTeste = ((& $php $ajuda criar-usuario 2>&1) -join '').Trim()
+Checar 'o usuario de teste foi criado' ($usuarioTeste -match '^\d+$') "id: $usuarioTeste"
+
+if ($usuarioTeste -match '^\d+$') {
+    # Duas palavras-chave (o basico permite 2).
+    $palavras = ((& $php $ajuda palavras $usuarioTeste 2 2>&1) -join '').Trim()
+    Checar 'as duas palavras foram criadas' ($palavras -eq '2') "criadas: $palavras"
+
+    # O login do usuario de teste (outra sessao).
+    $sessaoTeste = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+    $null = Invoke-WebRequest -Uri "$base/login" -WebSession $sessaoTeste -UseBasicParsing -TimeoutSec 60
+    $null = Invoke-WebRequest -Uri "$base/login" -Method Post -Body @{ email = 'fase9-http@busca-vagas.teste'; senha = 'teste-123' } -WebSession $sessaoTeste -UseBasicParsing -TimeoutSec 60 -MaximumRedirection 5
+
+    # A terceira palavra-chave tem de ser recusada.
+    $r = Invoke-WebRequest -Uri "$base/painel/palavras-chave" -Method Post -WebSession $sessaoTeste -UseBasicParsing -TimeoutSec 60 -Body @{ termo = 'Palavra Bloqueada'; cidades = "Ponta Grossa - PR`nCastro"; frequencia_horas = '24' }
+    Checar 'a 3a palavra-chave e recusada no servidor' ($r.Content.Contains('permite 2 palavra-chave')) 'a mensagem do limite aparece'
+
+    # O envio em massa nao existe para o plano basico.
+    try {
+        $r = Invoke-WebRequest -Uri "$base/painel/envio-massa" -WebSession $sessaoTeste -UseBasicParsing -TimeoutSec 60 -ErrorAction Stop
+        Checar 'o envio em massa e bloqueado' ($r.StatusCode -eq 404) "HTTP $($r.StatusCode)"
+    } catch {
+        $codigo = 0
+        if ($_.Exception.Response) { $codigo = [int] $_.Exception.Response.StatusCode }
+        Checar 'o envio em massa e bloqueado' ($codigo -eq 404 -or $codigo -eq 403) "HTTP $codigo"
+    }
+
+    # O card do plano no painel dele.
+    $r = Invoke-WebRequest -Uri "$base/painel" -WebSession $sessaoTeste -UseBasicParsing -TimeoutSec 60
+    Checar 'o painel dele mostra o card do plano' ($r.Content.Contains('Meu plano'))
+    Checar 'o menu dele esconde o envio em massa' (-not $r.Content.Contains('painel/envio-massa'))
+}
+
+& $php $ajuda apagar-usuario 2>&1 | Out-Null
+
+Write-Host ''
+Write-Host '-- O max_usuarios trava a atribuicao --' -ForegroundColor Yellow
+
+# O plano Empresa com uma vaga so (o teste usa o proprio plano).
+$maxAntes = ((& $php $ajuda max-usuarios empresa 1 2>&1) -join '').Trim()
+Checar 'o plano foi limitado a 1 usuario' ($maxAntes -ne '0') "max_usuarios antes: $maxAntes"
+
+$r = Invoke-WebRequest -Uri "$base/admin/usuarios/8/atribuir-plano" -Method Post -Body @{ plano_id = '3' } -WebSession $session -UseBasicParsing -TimeoutSec 60
+Checar 'a atribuicao e recusada (plano cheio)' ($r.Content.Contains('aceita 1 usuario')) 'a mensagem de limite aparece'
+
+# O plano volta ao normal.
+& $php $ajuda max-usuarios empresa $maxAntes 2>&1 | Out-Null
+
+Write-Host ''
 Write-Host ("RESULTADO: {0} ok | {1} falha(s)" -f ($total - $falhas), $falhas)

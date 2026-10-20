@@ -787,6 +787,9 @@ powershell -File tools/fase8-cronjob.ps1
 # a Fase 9 (planos por usuario e isolamento de vagas)
 php tools/fase9-testes.php
 powershell -File tools/fase9-admin.ps1
+
+# o SQL de sanidade: diz se ha vaga vazada entre usuarios
+php tools/fase9-sanidade.php
 ```
 
 O teste `fase8-e2e.ps1` e o fim a fim: ele cria uma vaga que aponta

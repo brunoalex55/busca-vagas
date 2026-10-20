@@ -51,6 +51,7 @@ class AguardandoAprovacao extends BaseController
             ],
             'pagamento'   => $pagamento,
             'temPendente' => $temPendente,
+            'plano'       => (new \App\Libraries\ResolvedorPlano())->obterPlanoDoUsuario((int) $this->sessao->get('usuario_id')),
         ]);
     }
 

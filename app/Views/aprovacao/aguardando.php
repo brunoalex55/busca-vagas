@@ -75,6 +75,22 @@ if ($nome === null || $nome === '') {
                         Ola, <?php echo  esc($nome) ; ?>. Sua conta foi criada com sucesso!
                         Para liberar o acesso, faca o pagamento via PIX e informe abaixo.
                     </p>
+
+                    <?php /* O plano que o usuario escolheu no cadastro. */ ?>
+                    <?php
+                    // O plano escolhido (vazio quando nao tem).
+                    $planoEscolhido = '';
+
+                    if (isset($plano) && $plano !== null) {
+                        $planoEscolhido = texto_ou($plano, 'nome', '');
+                    }
+                    ?>
+                    <?php if ($planoEscolhido !== ''){ ?>
+                        <p class="cartao-aprovacao__texto">
+                            Plano escolhido: <strong><?php echo esc($planoEscolhido) ; ?></strong>.
+                            O administrador confirma o pagamento e libera o acesso.
+                        </p>
+                    <?php } ?>
                 <?php } ?>
             </header>
 
