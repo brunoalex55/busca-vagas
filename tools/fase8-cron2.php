@@ -92,6 +92,25 @@ echo PHP_EOL . '-- Preparo --' . PHP_EOL;
 $vagas = model('VagaModel');
 $vagas->db->table('vagas')->where('job_id', 'dv-teste-cron2')->delete();
 
+// O teste e sobre UMA vaga por cenario: as outras vagas pendentes do
+// usuario sao tiradas da fila (o loop esvaziaria a fila inteira e as
+// contagens deste teste nao fechariam).
+//
+// As vagas reais do usuario NAO sao apagadas: o teste guarda o estado
+// delas e devolve no final.
+$filaReal = $vagas->db->table('vagas')
+    ->where('usuario_id', $usuarioId)
+    ->where('provedor_vaga', 'divulgavagas')
+    ->whereIn('candidatura_divulgavagas_status', ['pendente', 'pendente_email'])
+    ->get()
+    ->getResultArray();
+
+$vagas->db->table('vagas')
+    ->where('usuario_id', $usuarioId)
+    ->where('provedor_vaga', 'divulgavagas')
+    ->whereIn('candidatura_divulgavagas_status', ['pendente', 'pendente_email'])
+    ->update(['candidatura_divulgavagas_status' => 'enviada']);
+
 $emails = model('EmailEnviadoModel');
 $emails->db->table('emails_enviados')->where('destinatario', 'ocupado@empresa-teste.com.br')->delete();
 $emails->db->table('emails_enviados')->where('destinatario', 'rh@empresa-teste.com.br')->delete();
@@ -395,6 +414,14 @@ $emails->db->table('emails_enviados')->where('destinatario', 'ocupado@empresa-te
 $emails->db->table('emails_enviados')->where('destinatario', 'rh@empresa-teste.com.br')->delete();
 model('ExecucaoDivulgaVagasModel')->db->table('execucoes_divulgavagas')->where('usuario_id', $usuarioId)->delete();
 @unlink($curriculo);
+
+// Devolve as vagas reais do usuario para a fila (o teste so as tirou
+// de la para as contagens fecharem).
+foreach ($filaReal as $vagaReal) {
+    $vagas->db->table('vagas')
+        ->where('id', (int) $vagaReal['id'])
+        ->update(['candidatura_divulgavagas_status' => (string) $vagaReal['candidatura_divulgavagas_status']]);
+}
 
 $configuracoes->db->table('configuracoes')->where('usuario_id', $usuarioId)->update([
     'horario_inicio_envio'                    => '08:00:00',
