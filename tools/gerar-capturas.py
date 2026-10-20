@@ -54,6 +54,21 @@ def entrar(page, credenciais):
     page.wait_for_load_state("networkidle")
 
 
+def mascarar_emails(page):
+    """Borra os e-mails que aparecem na tela (dado pessoal)."""
+    page.evaluate(
+        """
+        () => {
+            document.querySelectorAll('.item-lista__meta').forEach((el) => {
+                if (el.textContent.indexOf('@') !== -1) {
+                    el.style.filter = 'blur(3px)';
+                }
+            });
+        }
+        """
+    )
+
+
 def capturar(page, nome, url, tela_inteira=True, antes=None):
     """Abre a tela e salva a imagem."""
     page.goto(f"{BASE}{url}", wait_until="networkidle")
@@ -62,6 +77,9 @@ def capturar(page, nome, url, tela_inteira=True, antes=None):
     if antes is not None:
         antes(page)
         page.wait_for_timeout(700)
+
+    # Os e-mails das contas reais nao podem aparecer na imagem.
+    mascarar_emails(page)
 
     caminho = DESTINO / f"{nome}.png"
     page.screenshot(path=str(caminho), full_page=tela_inteira)
@@ -86,7 +104,6 @@ def main():
         print("-- o site publico --")
         capturar(page, "login", "/login")
         capturar(page, "cadastro", "/registro")
-
         print("-- o painel do usuario --")
         entrar(page, USUARIO)
         capturar(page, "painel-usuario", "/painel")
@@ -103,6 +120,26 @@ def main():
             tela_inteira=False,
             antes=lambda p: p.click("[data-modal-abrir='modal-plano']"),
         )
+
+        # Um pedido de plano de demonstracao (para a fila do admin nao
+        # aparecer vazia na captura).
+        page.goto(f"{BASE}/painel", wait_until="networkidle")
+        page.evaluate(
+            """
+            () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/painel/plano/solicitar';
+                form.innerHTML =
+                    '<input name="plano_id" value="2">' +
+                    '<textarea name="mensagem">Quero o plano Profissional.</textarea>';
+                document.body.appendChild(form);
+                form.submit();
+            }
+            """
+        )
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(600)
 
         # ------------------------------------------------ o painel do admin
         print("-- o painel do administrador --")

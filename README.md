@@ -686,6 +686,13 @@ agendamento do SerpApi. Tambem existem por usuario:
 - `POST /cron/usuario/{id}/divulgavagas/buscar-vagas?token=...`
 - `POST /cron/usuario/{id}/divulgavagas/candidatar?token=...`
 
+> **Onde fica o token global:** ele e criado sozinho na primeira
+> execucao e vive em `writable/cron_token.txt` (fora da raiz web). Esse
+> arquivo **nunca e versionado** — o `.gitignore` protege a pasta. Voce
+> ve o valor em `/admin/cron` e pode gerar um novo a qualquer momento
+> (o botao "Regenerar token global"); depois disso, atualize a URL dos
+> jobs no cron-job.org.
+
 E os comandos Spark (o caminho oficial, sem HTTP):
 
 ```bash
