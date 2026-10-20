@@ -216,10 +216,18 @@ class ResolvedorPlano
         $legado = valor_ou($configuracao, $campo, null);
 
         if ($legado !== null) {
+            // A configuracao guarda se o valor dela veio do plano ou foi
+            // sobrescrito a mao (a coluna limite_envios_dia_origem).
+            $rotulo = 'Configuracao da conta';
+
+            if ($campo === 'limite_envios_dia' && texto_ou($configuracao, 'limite_envios_dia_origem', 'plano') === 'manual') {
+                $rotulo = 'Configuracao da conta (ajustada a mao)';
+            }
+
             return [
                 'valor' => (int) $legado,
                 'origem' => 'configuracao',
-                'rotulo' => 'Configuracao da conta',
+                'rotulo' => $rotulo,
             ];
         }
 
