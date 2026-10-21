@@ -44,7 +44,7 @@ com mod_php, que e o caso do servidor deste projeto.
 
 | Ambiente | Antes | Depois |
 |---|---|---|
-| Servidor de producao (AWS) | 8.3.6 | **8.3.36** (confirmado no CLI e no mod_php do Apache) |
+| Servidor de producao | 8.3.6 | **8.3.36** (confirmado no CLI e no mod_php do Apache) |
 | Ambiente local (Windows) | 8.4.26 | **8.4.27** |
 
 **As medidas de contencao, aplicadas enquanto a atualizacao nao chegava:**

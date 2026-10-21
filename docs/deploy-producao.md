@@ -21,7 +21,7 @@ tudo com o GitHub a cada 10 minutos**.
 | Parte | Onde |
 |---|---|
 | Dominio | `buscavagas.brunoalexandre.com` (Cloudflare sem proxy, DNS direto) |
-| Servidor | Ubuntu 24.04 na AWS (2 vCPU, 8 GB RAM) |
+| Servidor | Ubuntu 24.04 (2 vCPU, 8 GB RAM) |
 | Web | Apache 2.4 com mod_php **8.3.36** (corrigido) e HTTPS do Let's Encrypt |
 | Codigo | `/var/www/buscavagas` (clone do GitHub) |
 | Raiz web | `/var/www/buscavagas/public` (o resto nao e servido) |
