@@ -1221,5 +1221,6 @@ usar no dia a dia.
 - [docs/agendamento-windows.md](docs/agendamento-windows.md)
 - [docs/agendamento-manual.md](docs/agendamento-manual.md)
 - [docs/tutorial-cron-job-org.md](docs/tutorial-cron-job-org.md)
+- [docs/deploy-producao.md](docs/deploy-producao.md)
 - [docs/checklist-final.md](docs/checklist-final.md)
 - [docs/revisao-final.md](docs/revisao-final.md)
