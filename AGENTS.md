@@ -63,7 +63,7 @@ Nada foi instalado no sistema operacional. Tudo é portátil.
 
 | Componente | Versão | Caminho |
 |---|---|---|
-| PHP | 8.4.26 (NTS x64) | `C:\Users\Rafael Albanese\AppData\Local\php84\php.exe` |
+| PHP | 8.4.27 (NTS x64) - a 8.4.26 esta vulneravel ao CVE-2026-109618 e ao CVE-2026-109619 | `C:\Users\Rafael Albanese\AppData\Local\php84\php.exe` |
 | Composer | 2.10.3 | `...\php84\composer.phar` |
 | MariaDB | 11.8.9 LTS | `C:\Users\Rafael Albanese\AppData\Local\MariaDB` |
 | Projeto | CI 4.7.5 | `C:\Users\Rafael Albanese\Desktop\CI_EMPLOYER` |

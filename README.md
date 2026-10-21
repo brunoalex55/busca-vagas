@@ -26,6 +26,69 @@ Mais informacoes no README.
 > no fim deste README). A donation e **voluntaria** e nao compra nenhuma
 > licenca especial nem garantia de suporte.
 
+## ⚠️ Aviso de seguranca: PHP corrigido (CVE-2026-109618 e CVE-2026-109619)
+
+Em 21 de outubro de 2026 o PHP publicou dois avisos de **execucao remota
+de codigo (RCE) sem autenticacao**. Os dois afetam todas as instalacoes
+que atendem requisicoes da web, com risco maximo justamente no Apache
+com mod_php, que e o caso do servidor deste projeto.
+
+| Vulnerabilidade | Caminho do ataque |
+|---|---|
+| **CVE-2026-109618** (GHSA-w8hw-w9fx-j79w) | O tratamento de memoria esgotada interrompe o PHP com os dados internos da requisicao pela metade. A limpeza passa a tratar dado invalido como valido, o que corrompe a memoria e permite executar codigo **antes de qualquer linha da aplicacao rodar**. |
+| **CVE-2026-109619** (GHSA-6wmf-4rv5-p3rp) | O estado interno de uma requisicao sobrevive depois da memoria ser liberada. Como o mod_php atende varias requisicoes no mesmo processo, a requisicao seguinte reaproveita esse estado velho. O caminho confirmado passa pelo `session.upload_progress.enabled`. |
+
+### O que foi feito aqui
+
+**A atualizacao do PHP, que e a solucao completa:**
+
+| Ambiente | Antes | Depois |
+|---|---|---|
+| Servidor de producao (AWS) | 8.3.6 | **8.3.36** (confirmado no CLI e no mod_php do Apache) |
+| Ambiente local (Windows) | 8.4.26 | **8.4.27** |
+
+**As medidas de contencao, aplicadas enquanto a atualizacao nao chegava:**
+
+| Medida | Onde | Para que serve |
+|---|---|---|
+| `session.upload_progress.enabled = 0` | `conf.d` do apache2, cli e fpm | Fecha o caminho confirmado do CVE-2026-109619 |
+| `php_admin_value memory_limit -1` | `conf-available/seguranca-php.conf` | Tira o limite finito de memoria (CVE-2026-109618). Por ser `php_admin_value`, a aplicacao nao consegue recolocar um limite |
+| `post_max_size = 32M` e `upload_max_filesize = 16M` | Apache | Limita o corpo da requisicao, mantendo o envio de imagens do painel |
+| `LimitRequestBody`, `LimitRequestFields` e `LimitRequestLine` | Apache (`conf-available/limites-requisicao.conf`) | Limites de requisicao no servidor web, como o aviso recomenda |
+| `MemoryMax=1G` e `MemoryHigh=768M` | systemd + cgroup | Com o `memory_limit` sem limite, o servidor nao pode ser esgotado |
+| `minPhpVersion = '8.2.35'` (com a conferencia por serie) | `public/index.php` e `spark` | O sistema recusa rodar em um PHP vulneravel |
+| Restricao de versao no `composer.json` | `composer.json` | O `composer install` tambem bloqueia versao vulneravel |
+
+> O aviso oficial e claro: *"only an update is a complete solution"*. As
+> contencoes acima reduzem a exposicao, mas **nao substituem** a
+> atualizacao.
+
+### A versao minima por serie
+
+O aviso do PHP e para as series 8.2, 8.3, 8.4 e 8.5, e cada uma tem a
+sua versao corrigida. O sistema confere a serie em que esta rodando:
+
+| Serie | Versao corrigida |
+|---|---|
+| 8.2 | 8.2.35 |
+| 8.3 | 8.3.36 |
+| 8.4 | 8.4.27 |
+| 8.5 | 8.5.12 |
+
+### O que rotacionar depois de uma exposicao
+
+O aviso vale para qualquer instalacao que ficou exposta no periodo
+entre a publicacao e a atualizacao. O que precisa ser trocado:
+
+- a senha do banco de dados e a do usuario do sistema;
+- o **token global do cron** (`writable/cron_token.txt`), que autentica
+  as chamadas do agendador externo;
+- a chave de criptografia do sistema (`CRIPTOGRAFIA_CHAVE` no `.env`),
+  que invalida as senhas de app guardadas;
+- as sessoes do painel (a pasta `writable/session/`), forcando o login
+  de novo.
+
+---
 > SaaS de busca de empregos: encontra vagas no Google Jobs, monta a
 > candidatura com o curriculo em PDF e envia o e-mail **pela conta Gmail de
 > cada usuario**, dentro de uma janela de envios controlada.
@@ -127,7 +190,7 @@ Pontos que definem o projeto:
 
 | Item | Versao / Observacao |
 |---|---|
-| PHP | 8.1 ou superior (desenvolvido e testado no 8.4) |
+| PHP | **8.2.35** ou superior na serie 8.2; **8.3.36**, **8.4.27** ou **8.5.12** nas demais (veja o [aviso de seguranca](#-aviso-de-seguranca-php-corrigido-cve-2026-109618-e-cve-2026-109619)) |
 | MySQL | 8.0 ou superior (tambem funciona com MariaDB 10.4+) |
 | Composer | 2.x (apenas para as dependencias do framework) |
 | Extensoes do PHP | `intl`, `mbstring`, `json`, `mysqlnd`, `curl`, `openssl` |

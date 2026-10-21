@@ -94,13 +94,18 @@ class TokenCron
 
     /**
      * Grava o token no disco com a menor permissao possivel.
+     *
+     * O arquivo fica 0640 (dono e grupo): o dono e quem roda o comando
+     * de linha (o deploy) e o grupo e o do servidor web (o Apache
+     * precisa ler o token para conferir a chamada). O arquivo fica
+     * FORA da raiz web, entao ele nunca e servido.
      */
     private function gravar(string $token): string
     {
         file_put_contents($this->arquivo, $token, LOCK_EX);
 
         // Restringe a permissao de leitura quando o sistema permitir.
-        @chmod($this->arquivo, 0600);
+        @chmod($this->arquivo, 0640);
 
         return $token;
     }

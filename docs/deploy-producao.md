@@ -22,7 +22,7 @@ tudo com o GitHub a cada 10 minutos**.
 |---|---|
 | Dominio | `buscavagas.brunoalexandre.com` (Cloudflare sem proxy, DNS direto) |
 | Servidor | Ubuntu 24.04 na AWS (2 vCPU, 8 GB RAM) |
-| Web | Apache 2.4 com mod_php 8.3 e HTTPS do Let's Encrypt |
+| Web | Apache 2.4 com mod_php **8.3.36** (corrigido) e HTTPS do Let's Encrypt |
 | Codigo | `/var/www/buscavagas` (clone do GitHub) |
 | Raiz web | `/var/www/buscavagas/public` (o resto nao e servido) |
 | Banco | MariaDB 10.11, base `ci_employer` |
@@ -81,7 +81,38 @@ proprio em `writable/automacoes-rpa/chrome/sessions` e a porta CDP em
 systemctl status buscavagas-chrome.service
 ```
 
-## Os comandos do dia a dia
+## O PHP e os avisos de RCE de 21/10/2026
+
+O PHP publicou em 21/10/2026 dois avisos de **execucao remota de codigo
+sem autenticacao** (CVE-2026-109618 e CVE-2026-109619). O aviso e
+explicito: *"only an update is a complete solution"*.
+
+**O que foi feito no servidor:**
+
+| | Antes | Agora |
+|---|---|---|
+| PHP (CLI e mod_php) | 8.3.6 | **8.3.36** (PPA do ondrej/php) |
+
+**As medidas de contencao** (aplicadas enquanto a atualizacao nao
+chegava, e mantidas como camada extra):
+
+| Medida | Onde |
+|---|---|
+| `session.upload_progress.enabled = 0` | `/etc/php/8.3/{cli,apache2,fpm}/conf.d/99-seguranca.ini` |
+| `php_admin_value memory_limit -1` | `/etc/apache2/conf-available/seguranca-php.conf` |
+| `post_max_size = 32M` e `upload_max_filesize = 16M` | o mesmo conf do Apache |
+| `LimitRequestBody`, `LimitRequestFields` e `LimitRequestLine` | `/etc/apache2/conf-available/limites-requisicao.conf` |
+| `MemoryMax=1G` e `MemoryHigh=768M` | `/etc/systemd/system/apache2.service.d/limites.conf` |
+
+**Depois da atualizacao, por ter havido exposicao, foi rotacionado:** a
+senha do MySQL (root e do sistema), a `CRIPTOGRAFIA_CHAVE` do `.env`, o
+token global do cron, a senha do administrador e as sessoes do painel.
+
+O sistema tambem se protege sozinho: `public/index.php` e `spark` recusam
+rodar em um PHP vulneravel (a conference e por serie) e o `composer.json`
+exige uma versao corrigida.
+
+---## Os comandos do dia a dia
 
 ```bash
 # o estado do Apache e do certificado

@@ -21,13 +21,38 @@ use Config\Paths;
  *---------------------------------------------------------------
  * CHECK PHP VERSION
  *---------------------------------------------------------------
+ *
+ * A versao minima do PHP e a primeira corrigida dos dois avisos de
+ * execucao remota de codigo publicados em 21/10/2026:
+ *
+ *   CVE-2026-109618 (GHSA-w8hw-w9fx-j79w) - corrupcao de memoria no OOM;
+ *   CVE-2026-109619 (GHSA-6wmf-4rv5-p3rp) - estado global velho.
+ *
+ * Cada serie tem a sua versao corrigida (o aviso e do PHP 8.2.35,
+ * 8.3.36, 8.4.27 e 8.5.12), entao a conferenca e feita por serie:
+ * uma serie sem a versao corrigida nao roda o sistema.
+ *
+ * Se voce atualizar esta lista, atualize tambem o `spark`.
  */
 
-$minPhpVersion = '8.2'; // If you update this, don't forget to update `spark`.
-if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
+$minPhpVersion = '8.2.35'; // If you update this, don't forget to update `spark`.
+
+$versoesCorrigidas = [
+    '8.2' => '8.2.35',
+    '8.3' => '8.3.36',
+    '8.4' => '8.4.27',
+    '8.5' => '8.5.12',
+];
+
+$serieDoPhp = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+$versaoCorrigida = $versoesCorrigidas[$serieDoPhp] ?? $minPhpVersion;
+
+if (version_compare(PHP_VERSION, $versaoCorrigida, '<')) {
     $message = sprintf(
-        'Your PHP version must be %s or higher to run CodeIgniter. Current version: %s',
+        'Este projeto exige o PHP %s ou mais novo (a serie %s foi corrigida em %s). Versao atual: %s',
         $minPhpVersion,
+        $serieDoPhp,
+        $versaoCorrigida,
         PHP_VERSION,
     );
 
